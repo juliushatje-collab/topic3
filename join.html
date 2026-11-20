@@ -103,8 +103,9 @@ function render(){const seat=st.seats?st.seats[me]:undefined;
     else{const c=(st.coins||"").split("").map(Number),x=c.slice(0,seat).reduce((a,b)=>a+b,0),v=mine[st.key],ph=st.phase||"open",r=st.res;
       h=`<h1>You are trader T${seat}</h1><p class="muted">The value V is the sum of ten coins (0 or 1). ${seat===0?"You see none of them.":"You see the first "+seat+" coin"+(seat===1?"":"s")+"."}</p>
         <div style="margin:12px 0">${c.map((b,i)=>i<seat?`<span class="coin ${b?"one":""}">${b}</span>`:`<span class="coin hid">?</span>`).join("")}</div>
-        <p class="muted" style="font-size:15px">Ones you see: <b>${x}</b> · unknown coins: <b>${10-seat}</b></p>`;
-      if(ph==="open"){h+=`<p class="lab">Your price</p><p class="muted" style="font-size:15px;margin-top:0">If the market price is below it, you buy one unit. Above it, you sell.</p>
+        <p class="muted" style="font-size:15px">Ones you see: <b>${x}</b> · unknown coins: <b>${10-seat}</b></p>
+        <div class="note" style="margin-top:8px"><b>Suggested value: ${(x+(10-seat)/2).toFixed(1)}</b><br><span class="muted" style="font-size:14px">${x} ones you see + ${10-seat} unknown coins × 0.5. Use it or type your own.</span></div>`;
+      if(ph==="open"){h+=`<p class="lab">Your price</p><p class="muted" style="font-size:15px;margin-top:0">What do you think all ten coins are worth together? If the market price ends up below your number, you buy one unit. Above it, you sell one unit.</p>
         <div class="price"><button data-d="-0.25" aria-label="Lower">−</button><input id="pr" inputmode="decimal" value="${v!=null?esc(v):""}" placeholder="e.g. 5.5"><button data-d="0.25" aria-label="Higher">+</button></div>
         <button id="send" class="on" style="margin-top:10px">${v!=null?"Update price":"Send price"}</button>
         <p class="muted" style="text-align:center;margin-top:10px">${v!=null?"Sent: "+Number(v).toFixed(2)+". You can change it until the market clears.":"Nobody sees your price before the market clears."}</p>`;}
@@ -118,7 +119,7 @@ function render(){const seat=st.seats?st.seats[me]:undefined;
     if(seat==null||seat>=(st.n||0)){h=`<h1>Watch this round</h1><p class="muted">All seats are taken. Listen to the others and guess for yourself.</p>`;}
     else{const ball=(st.balls||"")[seat],g=st.g||[],my=mine[st.key]||g[seat]||"",prevDone=g.slice(0,seat).every(v=>v),done=!!my;
       const turn=done?`<div class="turn done">You said ${my}</div>`:prevDone?`<div class="turn go">Your turn: say A or B out loud, then tap it</div>`:`<div class="turn wait">Wait: ${g.slice(0,seat).filter(v=>!v).length} player${g.slice(0,seat).filter(v=>!v).length===1?"":"s"} before you</div>`;
-      h=`<h1>You are player ${seat+1}</h1><p class="muted">Urn A: 2 light, 1 dark. Urn B: 1 light, 2 dark. You drew one ball. Keep it secret.</p>
+      h=`<h1>You are player ${seat+1}</h1><p class="muted">Urn A: 2 light, 1 dark. Urn B: 1 light, 2 dark. You drew one ball from the urn we use. Keep it secret. Guess the urn: say A or B out loud when it's your turn, then tap it. Listen to the players before you.</p>
         <button id="peek" style="margin-top:10px">Hold to see your ball</button><div id="ballBox"><span class="ball q"></span></div>
         ${turn}<div class="two"><button data-u="A" class="${my==="A"?"on":""}" ${done||!prevDone?"disabled":""}>A</button><button data-u="B" class="${my==="B"?"on":""}" ${done||!prevDone?"disabled":""}>B</button></div>
         ${st.rev&&st.urn?`<div class="note"><p class="big" style="margin:0">The urn was ${st.urn}.</p><p style="margin:6px 0 0">Your ball was ${ball==="L"?"light":"dark"}; you said ${my||"–"}.</p></div>`:""}`;
