@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Join · Information Economics</title>
+<style>
+:root{--bg:#FAF9F5;--ink:#1E2B31;--muted:#6B777C;--line:#D9D6CE;--teal:#2C6B83;--teal-soft:#DCE8EC;--red:#B3261E;--red-soft:#F4DEDB;--gold:#C9971C;--gold-soft:#F3E7C6;
+  --serif:Cambria,"Iowan Old Style",Georgia,serif;--sans:-apple-system,"Segoe UI",Calibri,Helvetica,Arial,sans-serif;--mono:"SF Mono",Menlo,Consolas,monospace;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 var(--sans);-webkit-text-size-adjust:100%}
+main{max-width:520px;margin:0 auto;padding:max(20px,env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;margin-bottom:18px}
+h1{font:400 28px/1.2 var(--serif);margin:0 0 8px}
+.muted{color:var(--muted)}
+.lab{color:var(--teal);font-size:14px;margin:18px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+.big{font:400 22px/1.3 var(--serif)}
+button{font:600 18px var(--sans);border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:16px;width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+button:disabled{opacity:.45}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.coin{width:38px;height:38px;border-radius:50%;display:inline-grid;place-items:center;font:600 17px var(--mono);border:2px solid var(--teal);color:var(--teal);background:#fff;margin:0 4px 6px 0}
+.coin.one{background:var(--teal);color:#fff}
+.coin.hid{border-style:dashed;border-color:#A9B3B6;color:#A9B3B6}
+.price{display:flex;gap:8px;align-items:stretch}
+.price input{flex:1;min-width:0;font:600 26px var(--mono);text-align:center;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;color:var(--ink)}
+.price button{width:64px;padding:0;font-size:26px}
+.ball{width:120px;height:120px;border-radius:50%;border:3px solid var(--ink);margin:6px auto;display:block}
+.ball.l{background:#fff}.ball.d{background:var(--ink)}.ball.q{border-style:dashed;border-color:#A9B3B6}
+.note{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:14px}
+.win{color:var(--teal);font-weight:700}.lose{color:var(--red);font-weight:700}
+.turn{padding:12px 14px;border-radius:10px;margin:14px 0;font-weight:600;text-align:center}
+.turn.wait{background:#EEECE6;color:var(--muted)}.turn.go{background:var(--gold-soft);color:#7a5a0e}.turn.done{background:var(--teal-soft);color:var(--teal)}
+</style>
+<script src="config.js"></script>
+</head><body>
+<main>
+  <header><span>Information Economics · Topic 3</span><span id="who"></span></header>
+  <div id="app"><h1>Connecting …</h1><p class="muted">One moment.</p></div>
+</main>
+<script>
+/* Live layer transport. Two backends with the same tiny API:
+   - Firebase Realtime Database (when window.LIVE_CONFIG.firebase is set)
+   - local mock over BroadcastChannel + localStorage (?mock=1), for testing on one computer
+   API: net.set(path,val) · net.update(path,obj) · net.on(path,cb) -> unsubscribe · net.ready (Promise<boolean>) */
+function makeNet(room){
+  const cfg=window.LIVE_CONFIG||{};
+  const mock=/[?&]mock=1/.test(location.search)||cfg.mock===true;
+  const base="rooms/"+room;
+  if(mock){
+    const KEY="livemock:"+room,ch=new BroadcastChannel(KEY),subs=[];
+    const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}};
+    const get=(tree,p)=>p.split("/").filter(Boolean).reduce((o,k)=>o==null?undefined:o[k],tree);
+    const put=(tree,p,v)=>{const ks=p.split("/").filter(Boolean);let o=tree;ks.slice(0,-1).forEach(k=>{if(typeof o[k]!=="object"||o[k]===null)o[k]={};o=o[k];});if(v===null||v===undefined)delete o[ks[ks.length-1]];else o[ks[ks.length-1]]=v;};
+    const fire=()=>{const t=load();subs.forEach(s=>s.cb(get(t,s.p)??null));};
+    ch.onmessage=fire;addEventListener("storage",e=>{if(e.key===KEY)fire();});
+    const write=f=>{const t=load();f(t);localStorage.setItem(KEY,JSON.stringify(t));ch.postMessage(1);fire();};
+    return {mock:true,ready:Promise.resolve(true),
+      set:(p,v)=>write(t=>put(t,p,v)),
+      update:(p,obj)=>write(t=>Object.entries(obj).forEach(([k,v])=>put(t,p+"/"+k,v))),
+      on:(p,cb)=>{const s={p,cb};subs.push(s);setTimeout(()=>cb(get(load(),p)??null),0);return ()=>subs.splice(subs.indexOf(s),1);},
+      clientId:()=>{let id=sessionStorage.getItem("liveid");if(!id){id=Math.random().toString(36).slice(2,10);sessionStorage.setItem("liveid",id);}return id;}};
+  }
+  if(!cfg.firebase||typeof firebase==="undefined")return null;
+  let app;try{app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg.firebase);}catch(e){console.warn(e);return null;}
+  const db=firebase.database(app),ref=p=>db.ref(base+"/"+p);
+  const ready=new Promise(res=>{const t=setTimeout(()=>res(false),8000);db.ref(".info/connected").on("value",s=>{if(s.val()){clearTimeout(t);res(true);}});});
+  return {mock:false,ready,
+    set:(p,v)=>ref(p).set(v).catch(e=>console.warn(e)),
+    update:(p,obj)=>ref(p).update(obj).catch(e=>console.warn(e)),
+    on:(p,cb)=>{const r=ref(p),h=s=>cb(s.val());r.on("value",h);return ()=>r.off("value",h);},
+    clientId:()=>{let id=null;try{id=localStorage.getItem("liveid");}catch(e){}if(!id){id=Math.random().toString(36).slice(2,10);try{localStorage.setItem("liveid",id);}catch(e){}}return id;}};
+}
+
+</script>
+<script>
+(async function(){
+const $=id=>document.getElementById(id),app=$("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const room=(new URLSearchParams(location.search).get("r")||"").toUpperCase();
+if(!room){app.innerHTML=`<h1>Scan the QR code</h1><p class="muted">Open this page through the QR code on the screen.</p>`;return;}
+const C=window.LIVE_CONFIG||{};
+if(C.firebase&&!/[?&]mock=1/.test(location.search)){const L=src=>new Promise((res,rej)=>{const e=document.createElement("script");e.src=src;e.onload=res;e.onerror=rej;document.head.appendChild(e);});
+  try{await L("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");await L("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");}catch(e){}}
+const net=makeNet(room);
+if(!net){app.innerHTML=`<h1>Not available</h1><p class="muted">The live connection is not set up. Just follow on the big screen.</p>`;return;}
+const ok=await net.ready;
+if(!ok){app.innerHTML=`<h1>No connection</h1><p class="muted">Check your internet (WLAN or mobile data) and reload.</p><button onclick="location.reload()">Reload</button>`;return;}
+const me=net.clientId();
+net.update("players/"+me,{t:Date.now()});
+let st={act:"wait"},mine={},view="";
+net.on("state",v=>{st=v||{act:"wait"};render();});
+net.on("ans",v=>{const a=v||{};mine={};Object.entries(a).forEach(([k,o])=>{if(o&&o[me]!=null)mine[k]=o[me];});render();});
+const answer=(k,v)=>{mine[k]=v;net.set("ans/"+k+"/"+me,v);render();};
+const sign=v=>(v>0?"+":"")+v.toFixed(2);
+
+function render(){const seat=st.seats?st.seats[me]:undefined;
+  $("who").textContent=st.act==="market"&&seat!=null?"Trader T"+seat:st.act==="urn"&&seat!=null?"Player "+(seat+1):"";
+  let h="",key=st.act+"|"+(st.key||"");
+  if(st.act==="poll"){const v=mine[st.key];
+    h=`<h1>Would you ever pay money in order NOT to receive information?</h1><p class="muted">${st.key==="poll_end"?"Same question as at the start. Has your answer changed?":"Answer honestly, there is no wrong answer."}</p>
+      <div class="two" style="margin-top:22px"><button data-p="yes" class="${v==="yes"?"on":""}">Yes</button><button data-p="no" class="${v==="no"?"on":""}">No</button></div>
+      <p class="muted" style="margin-top:12px;text-align:center">${v?"Vote sent. You can still change it.":""}</p>`;}
+  else if(st.act==="market"){
+    if(seat==null){h=`<h1>This round is full</h1><p class="muted">Watch the screen. You get a seat in the next round.</p>`;}
+    else{const c=(st.coins||"").split("").map(Number),x=c.slice(0,seat).reduce((a,b)=>a+b,0),v=mine[st.key],ph=st.phase||"open",r=st.res;
+      h=`<h1>You are trader T${seat}</h1><p class="muted">The value V is the sum of ten coins (0 or 1). ${seat===0?"You see none of them.":"You see the first "+seat+" coin"+(seat===1?"":"s")+"."}</p>
+        <div style="margin:12px 0">${c.map((b,i)=>i<seat?`<span class="coin ${b?"one":""}">${b}</span>`:`<span class="coin hid">?</span>`).join("")}</div>
+        <p class="muted" style="font-size:15px">Ones you see: <b>${x}</b> · unknown coins: <b>${10-seat}</b></p>`;
+      if(ph==="open"){h+=`<p class="lab">Your price</p><p class="muted" style="font-size:15px;margin-top:0">If the market price is below it, you buy one unit. Above it, you sell.</p>
+        <div class="price"><button data-d="-0.25" aria-label="Lower">−</button><input id="pr" inputmode="decimal" value="${v!=null?esc(v):""}" placeholder="e.g. 5.5"><button data-d="0.25" aria-label="Higher">+</button></div>
+        <button id="send" class="on" style="margin-top:10px">${v!=null?"Update price":"Send price"}</button>
+        <p class="muted" style="text-align:center;margin-top:10px">${v!=null?"Sent: "+Number(v).toFixed(2)+". You can change it until the market clears.":"Nobody sees your price before the market clears."}</p>`;}
+      else{const P=r?r.P:null,sd=r&&r.side?r.side[seat]:0;
+        h+=`<div class="note"><p style="margin:0">Market price <b>P = ${P!=null?P.toFixed(2):"–"}</b>. Your price: <b>${v!=null?Number(v).toFixed(2):"none (computer played for you)"}</b>.</p>
+          <p class="big" style="margin:8px 0 0">${sd>0?"You buy":sd<0?"You sell":"You don't trade"}</p>`;
+        if(ph==="revealed"&&r&&r.g){const g=r.g[seat];h+=`<p style="margin:8px 0 0">The true value was <b>V = ${r.V}</b>.</p><p class="big" style="margin:6px 0 0">${sd?`<span class="${g>0?"win":g<0?"lose":""}">${sign(g)}</span>`:"0.00"}</p>`;}
+        else h+=`<p class="muted" style="margin:8px 0 0">Wait for the coins to be revealed.</p>`;
+        h+=`</div>`;}}}
+  else if(st.act==="urn"){
+    if(seat==null||seat>=(st.n||0)){h=`<h1>Watch this round</h1><p class="muted">All seats are taken. Listen to the others and guess for yourself.</p>`;}
+    else{const ball=(st.balls||"")[seat],g=st.g||[],my=mine[st.key]||g[seat]||"",prevDone=g.slice(0,seat).every(v=>v),done=!!my;
+      const turn=done?`<div class="turn done">You said ${my}</div>`:prevDone?`<div class="turn go">Your turn: say A or B out loud, then tap it</div>`:`<div class="turn wait">Wait: ${g.slice(0,seat).filter(v=>!v).length} player${g.slice(0,seat).filter(v=>!v).length===1?"":"s"} before you</div>`;
+      h=`<h1>You are player ${seat+1}</h1><p class="muted">Urn A: 2 light, 1 dark. Urn B: 1 light, 2 dark. You drew one ball. Keep it secret.</p>
+        <button id="peek" style="margin-top:10px">Hold to see your ball</button><div id="ballBox"><span class="ball q"></span></div>
+        ${turn}<div class="two"><button data-u="A" class="${my==="A"?"on":""}" ${done||!prevDone?"disabled":""}>A</button><button data-u="B" class="${my==="B"?"on":""}" ${done||!prevDone?"disabled":""}>B</button></div>
+        ${st.rev&&st.urn?`<div class="note"><p class="big" style="margin:0">The urn was ${st.urn}.</p><p style="margin:6px 0 0">Your ball was ${ball==="L"?"light":"dark"}; you said ${my||"–"}.</p></div>`:""}`;
+      h+=`<span hidden id="myBall">${ball}</span>`;}}
+  else{h=`<h1>You're in</h1><p class="muted">Look at the screen. Questions and games will appear here.</p>`;}
+  /* keep a half-typed price */
+  const pr=$("pr"),typed=pr&&document.activeElement===pr?pr.value:null;
+  if(h!==view){app.innerHTML=h;view=h;if(typed!=null&&$("pr")){$("pr").value=typed;$("pr").focus();}}
+  wire();}
+function wire(){
+  app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>answer(st.key,b.dataset.p));
+  app.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{const i=$("pr");const v=Math.max(0,Math.min(10,(parseFloat((i.value||"5").replace(",","."))||0)+ +b.dataset.d));i.value=v.toFixed(2);});
+  if($("send"))$("send").onclick=()=>{const v=parseFloat(($("pr").value||"").replace(",","."));if(isNaN(v)||v<0||v>10){$("pr").style.borderColor="var(--red)";return;}answer(st.key,Math.round(v*100)/100);};
+  app.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>answer(st.key,b.dataset.u));
+  const pk=$("peek");if(pk){const show=e=>{e.preventDefault();$("ballBox").innerHTML=`<span class="ball ${$("myBall").textContent==="L"?"l":"d"}"></span><p style="text-align:center;margin:0">${$("myBall").textContent==="L"?"light":"dark"}</p>`;},
+    hide=()=>{$("ballBox").innerHTML=`<span class="ball q"></span>`;};
+    pk.addEventListener("pointerdown",show);["pointerup","pointerleave","pointercancel"].forEach(t=>pk.addEventListener(t,hide));pk.oncontextmenu=e=>e.preventDefault();}}
+render();
+})();
+</script>
+</body></html>

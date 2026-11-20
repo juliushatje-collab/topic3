@@ -1,0 +1,3160 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Information Value Seminar</title>
+<style>
+/* Layout: a fixed 1280x720 slide stage scaled to the window; one slide visible at a time; thin progress line and slide counter. Deliberately single light theme (projector). */
+:root{
+  color-scheme:light;
+  --bg:#FAF9F5; --act:#EDF2F3; --ink:#1E2B31; --muted:#6B777C; --line:#D9D6CE; --grid:#E6E3DB;
+  --teal:#2C6B83; --teal-soft:#DCE8EC; --red:#B3261E; --red-soft:#F4DEDB; --gold:#C9971C; --gold-soft:#F3E7C6; --sea:#A9C4CE;
+  --serif:Cambria,"Iowan Old Style",Georgia,"Times New Roman",serif;
+  --sans:Calibri,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"SF Mono",Menlo,Consolas,monospace;
+}
+html,body{height:100%;margin:0}
+body{background:#2b3236;color:var(--ink);font-family:var(--sans);overflow:hidden;padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+[hidden]{display:none!important}
+#viewport{position:fixed;inset:0;overflow:hidden}
+#stage{width:1280px;height:720px;position:absolute;left:50%;top:50%;transform-origin:center center;background:var(--bg);box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.slide{position:absolute;inset:0;padding:44px 56px 56px;box-sizing:border-box;display:none;background:var(--bg)}
+.slide.on{display:block}
+.slide.act{background:var(--act)}
+.slide h1{font:400 34px/1.15 var(--serif);margin:0;text-wrap:balance;max-width:1150px}
+.slide .sub{font-size:19px;color:var(--muted);margin:10px 0 0}
+.foot{position:absolute;left:56px;right:56px;bottom:18px;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.body{position:absolute;left:56px;right:56px;top:150px;bottom:60px}
+.lab{color:var(--teal);font-size:16px;margin:0 0 4px}
+.big{font:400 26px/1.25 var(--serif)}
+p{margin:0 0 10px;font-size:20px;line-height:1.4}
+.muted{color:var(--muted)}
+.punch{font:400 24px/1.3 var(--serif);color:var(--red)}
+.row{display:flex;gap:28px}
+.col{flex:1;min-width:0}
+table.t{border-collapse:collapse;font-variant-numeric:tabular-nums}
+table.t th,table.t td{padding:9px 16px;border-bottom:1px solid var(--line);text-align:center;font-size:20px}
+table.t th{color:var(--muted);font-weight:600;font-size:16px}
+table.t td:first-child,table.t th:first-child{text-align:left;font-weight:600}
+table.t tr.hi td{background:var(--gold-soft)}
+math{font-size:30px;color:var(--ink)}
+math.sm{font-size:24px}
+.stat b{display:block;font:400 64px/1 var(--serif);color:var(--teal)}
+.stat span{font-size:17px;color:var(--muted)}
+svg text{font-family:var(--sans);fill:var(--muted);font-size:13px}
+button{font:600 15px var(--sans);color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--teal)}
+button.on,button.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.seg button{border:0;border-radius:0;padding:6px 12px;font-size:14px}
+input[type=number]{font:16px var(--mono);width:74px;padding:5px 6px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--ink)}
+input[type=range]{accent-color:var(--teal);width:100%}
+.coin{width:44px;height:44px;border-radius:50%;display:inline-grid;place-items:center;font:600 20px var(--mono);border:2px solid var(--teal);color:var(--teal);background:#fff;margin-right:8px}
+.coin.one{background:var(--teal);color:#fff}
+.coin.hid{border-style:dashed;border-color:#A9B3B6;color:#A9B3B6}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:14px;font-weight:600}
+.buy{background:var(--teal-soft);color:var(--teal)} .sell{background:var(--gold-soft);color:#8a6611} .win{background:var(--teal-soft);color:var(--teal)} .lose{background:var(--red-soft);color:var(--red)}
+.chip{display:inline-flex;flex-direction:column;align-items:center;gap:4px;margin:0 4px 8px 0}
+#tChips .seg button{padding:4px 6px;font-size:12px}
+#tChips .chip{margin:0 2px 6px 0}
+.chip b{font:600 14px var(--mono)}
+.legend{display:flex;gap:18px;font-size:15px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+.foot button.nav{padding:0 10px;font-size:18px;line-height:22px;border-color:transparent;background:transparent;color:var(--muted)}
+.foot button.nav:hover{border-color:var(--line)}
+#progress{position:absolute;left:0;bottom:0;height:3px;background:var(--teal);transition:width .2s}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#11181b;color:#e8eef0;font:16px/1.5 var(--sans);padding:14px max(20px,env(safe-area-inset-left,0px)) calc(14px + env(safe-area-inset-bottom,0px));white-space:pre-wrap;z-index:5}
+#notes b{color:#9FC6D4}
+#help{position:fixed;right:max(12px,env(safe-area-inset-right,0px));top:calc(12px + env(safe-area-inset-top,0px));background:rgba(17,24,27,.9);color:#e8eef0;font:14px/1.6 var(--sans);padding:12px 16px;border-radius:8px;z-index:6}
+@media (prefers-reduced-motion:reduce){#progress{transition:none}}
+.sec{position:absolute;right:56px;top:18px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ball{width:30px;height:30px;border-radius:50%;display:inline-block;border:2px solid var(--ink);box-sizing:border-box;vertical-align:middle;margin-right:4px}
+.ball.l{background:#fff}
+.ball.d{background:var(--ink)}
+.ball.q{border-style:dashed;border-color:#A9B3B6;background:transparent}
+.pl{display:flex;flex-direction:column;align-items:center;gap:6px;width:96px}
+.pl b{font:600 15px var(--mono)}
+.pl .tag{font-size:12px;color:var(--muted);height:16px}
+.pl .tag.c{color:var(--red);font-weight:600}
+.agenda{list-style:none;padding:0;margin:0}
+.agenda li{display:flex;gap:26px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line)}
+.agenda li span{font:400 30px var(--serif);color:var(--teal);width:48px}
+.agenda li b{font:400 26px var(--serif);font-weight:400;width:430px}
+.agenda li i{font-style:normal;color:var(--muted);font-size:18px}
+.refs{columns:2;column-gap:40px;font-size:13px;line-height:1.5}
+.refs div{break-inside:avoid;margin-bottom:5px}
+.ask{position:absolute;left:56px;right:56px;bottom:50px;font:400 19px var(--serif);color:#7a5a0e;border-top:1px solid var(--gold-soft,#F3E7C6);padding-top:8px;margin:0}
+.ask b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;margin-right:10px}
+.liveOnly{display:none!important} body.live .liveOnly{display:block!important}
+#liveBox{position:absolute;right:24px;top:24px;width:360px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:18px;z-index:4;text-align:center}
+#liveBox p{font-size:15px}
+.foot #livePill{padding:2px 10px;font-size:12px;font-weight:600;border-radius:999px}
+</style>
+
+</head><body>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-n="title">
+  <p class="lab" style="margin-top:40px">Seminar topic 3 · Information Economics</p>
+  <h1 style="font-size:52px;margin-top:40px;max-width:900px">Why more information can make you worse off</h1>
+  <p class="sub" style="color:var(--ink);font-size:24px;margin-top:22px">The theorem of non-negative information values, and why it fails in markets</p>
+  <div style="margin-top:60px"><span class="coin">0</span><span class="coin one">1</span><span class="coin one">1</span><span class="coin one">1</span><span class="coin one">1</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="coin hid">?</span></div>
+  <p class="muted" style="margin-top:40px;font-size:17px">Julius Hatje · 9 December 2026</p>
+  <div class="liveOnly" style="position:absolute;right:56px;bottom:64px;text-align:center"><div class="liveQR" data-px="210"></div><p class="muted" style="font-size:15px;margin-top:6px">Join on your phone · <b class="liveN">0</b> joined</p></div>
+</section>
+
+<section class="slide act" data-n="question">
+  <h1>Would you ever pay money in order NOT to receive information?</h1>
+  <p class="sub">A question to the room</p>
+  <div class="body row"><div class="col"><p class="big" style="margin-top:60px">Who would say yes?</p><p class="big">Who says no: information can only help?</p>
+    <div class="liveOnly" style="margin-top:40px"><p class="lab">Your votes</p><svg id="qPoll" width="620" height="70"></svg></div></div>
+    <div class="liveOnly" style="width:260px;text-align:center"><div class="liveQR" data-px="230"></div><p class="muted" style="font-size:14px;margin-top:6px"><span class="liveUrl"></span></p></div></div>
+</section>
+
+<section class="slide" data-n="agenda">
+  <h1>Four claims for today</h1>
+  <div class="body" style="top:130px">
+    <ul class="agenda">
+      <li><span>01</span><b>Knowing a little is worse than nothing</b><i>Schredelseker 2014 · short recap · you as the market</i></li>
+      <li><span>02</span><b>Formula and lab disagree</b><i>Rieder 2025 · Huber, Kirchler &amp; Sutter 2008</i></li>
+      <li><span>03</span><b>Herding is rational</b><i>cascades, public information, overconfidence · one more game</i></li>
+      <li><span>04</span><b>Half an analyst is worse than none</b><i>what information is worth · then: your opinion</i></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-n="theorem">
+  <p class="sec">01 · Theory</p>
+  <h1>Information cannot hurt you. Unless others have it too.</h1>
+  <p class="sub">Information is an option: if it does not help, you ignore it.</p>
+  <div class="body">
+    <math display="block"><mi mathvariant="normal">VOI</mi><mo>=</mo><msub><mi mathvariant="normal">𝔼</mi><mi>s</mi></msub><mrow><mo stretchy="false">[</mo><munder><mo movablelimits="false">max</mo><mi>a</mi></munder><mi mathvariant="normal">𝔼</mi><mrow><mo stretchy="false">[</mo><mi>u</mi><mo stretchy="false">(</mo><mi>a</mi><mo>,</mo><mi>ω</mi><mo stretchy="false">)</mo><mo>∣</mo><mi>s</mi><mo stretchy="false">]</mo></mrow><mo stretchy="false">]</mo></mrow><mo>−</mo><munder><mo movablelimits="false">max</mo><mi>a</mi></munder><mi mathvariant="normal">𝔼</mi><mrow><mo stretchy="false">[</mo><mi>u</mi><mo stretchy="false">(</mo><mi>a</mi><mo>,</mo><mi>ω</mi><mo stretchy="false">)</mo><mo stretchy="false">]</mo></mrow><mo>≥</mo><mn>0</mn></math>
+    <p class="muted" style="text-align:center">You never pay for not getting information (Blackwell 1951).</p>
+    <p class="lab" style="margin-top:44px">The hidden assumption</p>
+    <p class="big">Your payoff does not depend on what others know.<br>In a market it does: the price is made by everyone's information.</p>
+    <p class="muted" style="margin-top:14px;font-size:17px">Hirshleifer (1971): in a game, public information can make every player worse off.</p>
+  </div>
+</section>
+
+<section class="slide" data-n="pascal">
+  <p class="sec">01 · Paper 1</p>
+  <h1>Not forecasting is not a risk. It is a strategy.</h1>
+  <p class="sub">Schredelseker (2014), "Pascal's Wager and Information", Journal of Forecasting</p>
+  <div class="body row">
+    <table class="t" style="width:600px;align-self:flex-start"><tr><th></th><th>market efficient</th><th>market inefficient</th></tr><tr><td>I forecast</td><td>win nothing</td><td>win a lot</td></tr><tr class="hi"><td>I don't forecast</td><td>lose nothing</td><td>lose a lot</td></tr></table>
+    <div class="col"><p class="lab">The textbook logic</p><p>Forecasting weakly dominates, so it is rational whenever an inefficiency is possible.</p><p class="lab" style="margin-top:18px">The flaw</p><p>A non-forecaster (coin-flipper, index investor) never "loses a lot": he earns the market average in both columns.</p></div>
+  </div>
+  <p class="punch" style="position:absolute;left:56px;right:56px;bottom:104px">The market is zero-sum against the average: not everyone who knows more than nothing can beat it.</p>
+</section>
+
+<section class="slide" data-n="coins">
+  <p class="sec">01 · Recap from the lecture</p>
+  <h1>The coin market in one minute</h1>
+  <p class="sub">Ten coins decide the value. Trader Tn sees the first n coins: information is nested.</p>
+  <div class="body">
+    <div><span class="coin">0</span><span class="coin one">1</span><span class="coin one">1</span><span class="coin one">1</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="coin hid">?</span><span class="lab" style="display:inline;margin-left:16px">Trader T4 sees the first four coins</span></div>
+    <div style="margin-top:34px"><math display="block" style="text-align:left"><mi mathvariant="normal">𝔼</mi><mo stretchy="false">(</mo><mi>V</mi><mo>∣</mo><msub><mi>I</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>=</mo><mi>x</mi><mo>+</mo><mo stretchy="false">(</mo><mn>10</mn><mo>−</mo><mi>n</mi><mo stretchy="false">)</mo><mo>·</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mspace width="1.2em"></mspace><mo style="color:var(--teal)">=</mo><mn style="color:var(--teal)">3</mn><mo style="color:var(--teal)">+</mo><mo stretchy="false" style="color:var(--teal)">(</mo><mn style="color:var(--teal)">10</mn><mo style="color:var(--teal)">−</mo><mn style="color:var(--teal)">4</mn><mo stretchy="false" style="color:var(--teal)">)</mo><mo style="color:var(--teal)">·</mo><mfrac style="color:var(--teal)"><mn>1</mn><mn>2</mn></mfrac><mo style="color:var(--teal)">=</mo><mn style="color:var(--teal)">6.0</mn></math></div>
+    <p class="muted" style="margin-top:34px;max-width:1050px">Buy one unit if your estimate is above the price, sell if below. The price is set where most units change hands. Then V is revealed: buyers get V − P, sellers P − V.</p>
+  </div>
+</section>
+
+<section class="slide act" data-n="demo">
+  <p class="sec">01 · Live</p>
+  <h1>You are the market</h1>
+  <p class="sub">Enter a price on your phone (or card): you buy below it, you sell above it. Empty rows are played by the computer.</p>
+  <div class="body">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span id="lvCoins"></span>
+      <span class="seg" id="lvRounds"><button data-r="0111100000">R1</button><button data-r="1101110111">R2</button><button data-r="1000011110">R3</button></span>
+      <button id="lvClear">Clear market</button><button id="lvReveal">Reveal coins</button></div>
+    <div class="row" style="margin-top:14px">
+      <div style="width:520px"><table class="t" id="lvTbl" style="width:100%"></table></div>
+      <div class="col"><svg id="lvLine" viewBox="0 0 600 230" width="600" height="230"></svg>
+        <div class="legend"><span><i style="background:var(--teal)"></i>buyer</span><span><i style="background:var(--gold)"></i>seller</span><span><i style="background:var(--red)"></i>true value V</span><span>dashed ring = computer</span></div>
+        <p class="punch" id="lvVerdict" style="font-size:22px;margin-top:14px"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-n="worlds">
+  <p class="sec">01 · Theory</p>
+  <h1>Knowing a little is worse than knowing nothing</h1>
+  <p class="sub">All 1,024 coin sequences. Same traders, same rule: the only difference is whether the price reacts.</p>
+  <div class="body row">
+    <div><svg id="wChart" viewBox="0 0 760 440" width="760" height="440"></svg>
+      <div style="display:flex;gap:10px;margin-top:4px"><button id="wNat" class="on">Fixed price 5 (against nature)</button><button id="wMkt">Market price (game)</button></div></div>
+    <div class="col" style="padding-top:20px"><p class="lab">Against nature</p><p>every coin helps: 0.00 → 1.23</p><p class="lab" style="color:var(--red);margin-top:18px">In the market</p><p>T2 loses more than T0, despite knowing more</p><p class="muted" style="font-size:15px;margin-top:18px">Market line = Schredelseker (2014), Table I; own replication over all sequences.</p></div>
+  </div>
+  <p class="ask"><b>Ask the room</b>We are finance students with some information. Which trader are we?</p>
+</section>
+
+<section class="slide" data-n="rieder">
+  <p class="sec">02 · Paper 2</p>
+  <h1>The problem is not information. It is sameness.</h1>
+  <p class="sub">Rieder (2025): a closed form for the coin market, Journal of Behavioral and Experimental Finance</p>
+  <div class="body row">
+    <div><svg id="rChart" viewBox="0 0 740 430" width="740" height="430"></svg>
+      <div style="display:flex;gap:14px;align-items:center"><button id="rTog">Show Rieder's formula</button><span class="legend"><span><i style="background:var(--sea)"></i>simulation</span><span><i style="background:var(--red)"></i>Rieder (m = 9, n = 10)</span></span></div></div>
+    <div class="col"><math display="block" class="sm" style="text-align:left"><mi mathvariant="normal">𝔼</mi><mo stretchy="false">[</mo><msub><mi>r</mi><mi>j</mi></msub><mo stretchy="false">]</mo><mo>=</mo><msqrt><mfrac><mn>2</mn><mi>π</mi></mfrac></msqrt><mspace width="0.2em"></mspace><msub><mi>σ</mi><mi>v</mi></msub><mspace width="0.2em"></mspace><msub><mi>ρ</mi><mrow><mi>u</mi><mi>v</mi></mrow></msub><mo stretchy="false">(</mo><mi>j</mi><mo stretchy="false">)</mo></math>
+      <p class="muted" style="font-size:16px;margin-top:8px">Return is proportional to how strongly your position correlates with the mispricing.</p>
+      <p style="margin-top:16px"><span class="big" style="color:var(--teal)">24 %</span> of the information: worst (T2)</p>
+      <p><span class="big" style="color:var(--teal)">58 %</span> break-even (T5)</p>
+      <p><span class="big" style="color:var(--teal)">0.996</span> correlation with the simulation</p>
+      <p style="font-weight:600;font-size:17px;margin-top:10px">A passive trader has ρ = 0: no information is information.</p>
+      <p style="font-size:16px;margin-top:8px;color:var(--teal)">Non-cumulative case: more information is always better. The theorem fails because information is <i>nested</i>.</p></div>
+  </div>
+  <p class="ask"><b>Ask the room</b>If the problem is sameness: is a finance degree, where everyone learns the same models, part of it?</p>
+</section>
+
+<section class="slide" data-n="hks">
+  <p class="sec">02 · Paper 3</p>
+  <h1>The lab disagrees with the model. Who is right?</h1>
+  <p class="sub">Huber, Kirchler &amp; Sutter (2008): the coin market in the lab, Innsbruck, real money</p>
+  <div class="body row">
+    <div><svg id="hChart" viewBox="0 0 740 440" width="740" height="440"></svg></div>
+    <div class="col"><p class="lab">Reading 1</p><p>Returns first decline, then rise.</p><p class="lab" style="margin-top:14px">Reading 2 (the authors)</p><p>I0–I5 are not significantly different: "clearly inconsistent" with Schredelseker (1984).</p><p class="lab" style="margin-top:14px">Learning</p><p>Less-informed traders improve in the second half: I4 from −0.47 to +0.05.</p><p class="muted" style="font-size:16px;margin-top:10px">Same pattern in a double auction (T2) and with dividends (T3): only the best-informed clearly beat the rest.</p></div>
+  </div>
+  <p class="ask"><b>Ask the room</b>Professor Schredelseker: J or flat line? How do you read the lab?</p>
+</section>
+
+<section class="slide act" data-n="cascade">
+  <p class="sec">03 · Live</p>
+  <h1>Which urn? Say it out loud, one after the other</h1>
+  <p class="sub">Urn A: <span class="ball l"></span><span class="ball l"></span><span class="ball d"></span> &nbsp; Urn B: <span class="ball l"></span><span class="ball d"></span><span class="ball d"></span> &nbsp; Your phone (or card) shows one ball from the urn we use.</p>
+  <div class="body" style="top:140px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span class="seg" id="cRounds"><button data-c="0">Round 1</button><button data-c="1">Round 2</button><button data-c="2">Round 3</button></span>
+      <label class="muted" for="cN" style="font-size:15px;margin-left:6px">Players</label><select id="cN" style="font:15px var(--sans);padding:5px"></select>
+      <button id="cReveal">Reveal balls</button><button id="cAuto">Rational play</button><button id="cReset">Reset</button></div>
+    <div id="cPlayers" style="display:flex;gap:8px;margin-top:16px"></div>
+    <div class="row" style="margin-top:8px;gap:20px">
+      <div><svg id="cChart" viewBox="0 0 760 230" width="760" height="230"></svg><div class="legend"><span><i style="background:var(--teal)"></i>what the answers reveal</span><span><i style="background:var(--red)"></i>all private balls pooled (after reveal)</span></div></div>
+      <div class="col" style="padding-top:12px"><p class="lab">What the room publicly knows</p><p class="big" id="cPub"></p><p class="punch" id="cVerdict" style="font-size:21px;margin-top:10px"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-n="cascade2">
+  <p class="sec">03 · Herding</p>
+  <h1>Herding is rational. That is the problem.</h1>
+  <p class="sub">Information cascades: Bikhchandani, Hirshleifer &amp; Welch (1992), Banerjee (1992)</p>
+  <div class="body row">
+    <div class="col">
+      <math display="block" style="text-align:left"><mi>P</mi><mo stretchy="false">(</mo><mi>A</mi><mo>∣</mo><mi>k</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><msup><mn>2</mn><mi>k</mi></msup><mrow><msup><mn>2</mn><mi>k</mi></msup><mo>+</mo><mn>1</mn></mrow></mfrac></math>
+      <p class="muted" style="font-size:16px;margin-top:6px">k = light minus dark balls you can infer. Two public "A", own ball dark: k = 2 − 1 = 1, so P(A) = 2/3. Say A.</p>
+      <p class="lab" style="margin-top:28px">In the lab</p><p>Anderson &amp; Holt (1997) ran this exact game: rational cascades formed in most periods in which they could.</p>
+    </div>
+    <div class="col">
+      <p class="lab">01 Rational</p><p>After two equal answers, the public history outweighs your own ball.</p>
+      <p class="lab" style="margin-top:14px">02 Uninformative</p><p>From then on, answers reveal nothing. Private information stops reaching the public.</p>
+      <p class="lab" style="margin-top:14px">03 Fragile</p><p>Built on two balls, the cascade can be wrong and can break on one new public signal.</p>
+    </div>
+  </div>
+  <p class="punch" style="position:absolute;left:56px;right:56px;bottom:98px;font-size:22px">Each player used more information than the one before. The room knew less. Same mechanism as nested coins: shared information, shared errors.</p>
+  <p class="ask"><b>Ask the room</b>Where have you followed the crowd against your own information? Rationally?</p>
+</section>
+
+<section class="slide" data-n="herd">
+  <p class="sec">03 · Herding</p>
+  <h1>Real markets herd on purpose</h1>
+  <p class="sub">A theory of why it pays, and the data that shows it</p>
+  <div class="body row" style="gap:50px">
+    <div class="col"><p class="lab">Froot, Scharfstein &amp; Stein (1992): "Herd on the street"</p>
+      <p>A short-horizon speculator only profits if others trade on his information <i>after</i> him.</p>
+      <p>So it pays to study what everybody else studies, even information unrelated to fundamentals.</p>
+      <p class="big" style="margin-top:20px;color:var(--teal)">Information is valuable because others have it too.</p></div>
+    <div class="col"><p class="lab">Tumminello, Lillo, Piilo &amp; Mantegna (2012): Nokia, Finland 1998–2003</p>
+      <div class="stat" style="margin-top:12px"><b>11,385</b><span>investors with 20+ trading days</span></div>
+      <div class="stat" style="margin-top:16px"><b>356</b><span>clusters trading in sync more often than chance</span></div>
+      <div class="stat" style="margin-top:16px"><b>527</b><span>households in the largest cluster</span></div></div>
+  </div>
+</section>
+
+<section class="slide" data-n="mshin">
+  <p class="sec">03 · Public information</p>
+  <h1>Central bank transparency can make markets dumber</h1>
+  <p class="sub">Morris &amp; Shin (2002): you want to be right, and close to what the others do (Keynes' beauty contest)</p>
+  <div class="body row">
+    <div class="col">
+      <math display="block" class="sm" style="text-align:left"><msub><mi>a</mi><mi>i</mi></msub><mo>=</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>r</mi><mo stretchy="false">)</mo><mspace width="0.15em"></mspace><msub><mi mathvariant="normal">𝔼</mi><mi>i</mi></msub><mo stretchy="false">[</mo><mi>θ</mi><mo stretchy="false">]</mo><mo>+</mo><mi>r</mi><mspace width="0.15em"></mspace><msub><mi mathvariant="normal">𝔼</mi><mi>i</mi></msub><mo stretchy="false">[</mo><mover><mi>a</mi><mo>‾</mo></mover><mo stretchy="false">]</mo></math>
+      <math display="block" class="sm" style="text-align:left;margin-top:18px"><mtext>weight on public signal</mtext><mo>=</mo><mfrac><mi>α</mi><mrow><mi>α</mi><mo>+</mo><mi>β</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>r</mi><mo stretchy="false">)</mo></mrow></mfrac><mspace width="0.6em"></mspace><mo>&gt;</mo><mspace width="0.6em"></mspace><mfrac><mi>α</mi><mrow><mi>α</mi><mo>+</mo><mi>β</mi></mrow></mfrac></math>
+      <p class="muted" style="font-size:16px;margin-top:10px">α, β: precision of the public and the private signal. r: how much you care about the others.</p>
+      <label class="muted" for="msR" style="font-size:16px;display:block;margin-top:18px">Beauty-contest weight r = <b id="msRV"></b></label><input type="range" id="msR" min="0" max="0.95" step="0.05" value="0.75">
+      <label class="muted" for="msB" style="font-size:16px;display:block;margin-top:8px">Private precision relative to public, β/α = <b id="msBV"></b></label><input type="range" id="msB" min="0.5" max="20" step="0.5" value="4">
+    </div>
+    <div style="width:520px"><svg id="msChart" viewBox="0 0 520 260" width="520" height="260"></svg>
+      <p class="big" id="msVerdict" style="margin-top:8px"></p>
+      <p class="muted" style="font-size:15px">Welfare falls with more precise public information only if β/α &gt; 1 / ((1 − r)(2r − 1)), i.e. at least 8. Svensson (2006): so in practice, mostly pro transparency.</p></div>
+  </div>
+  <p class="ask"><b>Ask the room</b>Should the ECB say less?</p>
+</section>
+
+<section class="slide" data-n="psych">
+  <p class="sec">03 · Psychology</p>
+  <h1>Active traders pay for their confidence</h1>
+  <p class="sub">First: who here drives better than the average person in this room?</p>
+  <div class="body row" style="gap:44px">
+    <div class="col">
+      <p class="lab">Confidence rises, accuracy does not</p>
+      <p>Oskamp (1965): psychologists and students read a case in four parts. After part 1: 26 % correct, 33 % confident. Confidence rose with every part, accuracy did not. At the end, over 90 % were overconfident.</p>
+      <p class="muted" style="font-size:17px">Tsai, Klayman &amp; Hastie (2008): same pattern with more cues; confidence grows faster than accuracy.</p>
+      <p class="lab" style="margin-top:20px">In markets</p>
+      <p>Odean (1998): overconfident traders trade too much and lower their own expected utility.</p>
+    </div>
+    <div style="width:520px"><p class="lab">Barber &amp; Odean (2000): 66,465 US households, 1991–96, net annual return</p>
+      <svg id="boChart" viewBox="0 0 520 300" width="520" height="300"></svg>
+      <p class="punch" style="font-size:21px">T2 in real life: a little information, a lot of confidence.</p></div>
+  </div>
+  <p class="ask"><b>Ask the room</b>Is a trading app with push news an overconfidence machine?</p>
+</section>
+
+<section class="slide" data-n="wtp">
+  <p class="sec">04 · Value of information</p>
+  <h1>Half an analyst is worse than none</h1>
+  <p class="sub">Value of buying coins, starting from T0 who knows nothing (all 1,024 sequences, everyone else fundamental)</p>
+  <div class="body row">
+    <div style="width:700px"><svg id="wtpChart" viewBox="0 0 720 360" width="700" height="350"></svg>
+      <label class="muted" for="wtpC" style="font-size:16px">Price per coin: <b id="wtpCV"></b></label><input type="range" id="wtpC" min="0" max="0.2" step="0.01" value="0.1"></div>
+    <div class="col"><p class="lab">Best choice at this price</p><p class="big" id="wtpBest" style="color:var(--teal)"></p>
+      <p style="font-size:17px">For every price: 0 or 9 coins, never in between. The value of information is not concave (Radner &amp; Stiglitz 1984).</p>
+      <p class="lab" style="margin-top:14px">Tested in Innsbruck</p>
+      <p style="font-size:17px">Huber, Angerer &amp; Kirchler (2011): traders could buy one of five information levels. The uninformed earned the highest net returns; over time, people bought full information or none.</p>
+      <p class="muted" style="font-size:15px">Grossman &amp; Stiglitz (1980): with costly information, markets cannot be fully efficient.</p></div>
+  </div>
+  <p class="punch" style="position:absolute;left:56px;right:56px;bottom:94px;font-size:22px">Information only pays in bulk: the market splits into index investors and insiders.</p>
+  <p class="ask"><b>Ask the room</b>So should mid-sized banks close their research departments?</p>
+</section>
+
+<section class="slide act" data-n="t2q">
+  <p class="sec">Discussion</p>
+  <h1>You are T2. More information makes you lose. What do you do?</h1>
+  <p class="sub">A question to the room</p>
+  <div class="body row" style="top:200px">
+    <div class="col"><b style="font:400 72px var(--serif);color:var(--teal)">F</b><p class="big">Fundamental</p><p class="muted">keep using my two coins</p></div>
+    <div class="col"><b style="font:400 72px var(--serif);color:var(--teal)">P</b><p class="big">Passive</p><p class="muted">flip a coin: buy or sell</p></div>
+    <div class="col"><b style="font:400 72px var(--serif);color:var(--teal)">T</b><p class="big">Technical</p><p class="muted">read the price: buy if P &gt; 5</p></div>
+  </div>
+</section>
+
+<section class="slide" data-n="t2a">
+  <p class="sec">Discussion</p>
+  <h1>Try it: change any trader's strategy</h1>
+  <p class="sub">Expected payoffs over all 1,024 sequences. Dashes: everyone fundamental.</p>
+  <div class="body row">
+    <div style="width:720px"><svg id="tChart" viewBox="0 0 720 340" width="720" height="340"></svg>
+      <div id="tChips" style="margin-top:6px"></div></div>
+    <div class="col" style="padding-top:10px"><p class="lab">T2's choice</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;width:200px"><button data-t2="F">Fundamental</button><button data-t2="P">Passive</button><button data-t2="T">Technical</button></div>
+      <p>T2 earns <b id="tT2" style="font:400 34px var(--serif);color:var(--teal)"></b></p>
+      <p class="muted" style="font-size:17px">Technical: T2 herds on the price, which is set by traders who know more. If others copy the idea, it stops working: topic 5 next week.</p>
+      <p style="font-size:17px;color:var(--teal);margin-top:6px">A fourth option outside the model: sit out. My agent in Hauser's Complexity course only trades from information level 6 upward.</p>
+      <p class="muted" style="font-size:15px">Inefficiency var(P − V): <b id="tIneff"></b></p></div>
+  </div>
+</section>
+
+<section class="slide act" data-n="th1">
+  <p class="sec">Discussion · Thesis 1</p>
+  <h1>Unless you analyse full-time, you should only buy ETFs.</h1>
+  <p class="sub">What do you think?</p>
+  <div class="body"><p class="lab" style="margin-top:230px">To push the discussion</p><p class="muted">Who is T9 in the real world? Is an ETF a coin-flipper (ρ = 0)?</p><p class="muted">Sharpe (1991): before costs, the average active investor earns the market. If everyone buys ETFs, who sets the price?</p></div>
+</section>
+
+<section class="slide act" data-n="th2">
+  <p class="sec">Discussion · Thesis 2</p>
+  <h1>More mandatory disclosure protects small investors.</h1>
+  <p class="sub">What do you think?</p>
+  <div class="body row">
+    <div style="width:640px"><svg id="pChart" viewBox="0 0 640 300" width="640" height="300"></svg>
+      <label class="muted" for="pil" style="font-size:16px">Everyone sees at least <b id="pilV">0</b> coins (public information)</label><input type="range" id="pil" min="0" max="8" value="0"></div>
+    <div class="col"><p class="lab">To push the discussion</p><p class="muted" style="font-size:18px">Cascade game: more public history, less private information used. Morris &amp; Shin: public signals coordinate errors. Svensson: only in extreme cases.</p>
+      <p style="margin-top:14px">Least-informed trader T0: <b id="pilT0" style="font:400 30px var(--serif);color:var(--red)"></b></p>
+      <p>Inefficiency var(P − V): <b id="pilIn"></b></p></div>
+  </div>
+</section>
+
+<section class="slide act" data-n="th3">
+  <p class="sec">Discussion · Thesis 3</p>
+  <h1>If every fund uses the same AI models, markets become less efficient.</h1>
+  <p class="sub">What do you think?</p>
+  <div class="body"><p class="lab" style="margin-top:230px">To push the discussion</p><p class="muted">Same model, same data, same errors: a cascade at machine speed? Lopez-Lira &amp; Tang (2026): ChatGPT predicts returns. What happens when everyone uses it?</p></div>
+</section>
+
+<section class="slide" data-n="close">
+  <h1>Would you now pay not to receive information?</h1>
+  <p class="sub">Back to the first question</p>
+  <div class="body"><p class="punch" style="font-size:32px;margin-top:20px">Against nature, information is an option.<br>In a market, it is a bet on being different from the others.</p>
+    <div class="liveOnly" style="margin-top:26px"><p class="lab">Your votes: would you pay NOT to receive information?</p><svg id="cPoll" width="620" height="130"></svg></div>
+    <p style="margin-top:24px;max-width:1100px">Nested information, herding on public signals and overconfidence push traders into the losing middle. Simulation, closed form, lab and trading data point the same way: for most traders, more of the same information does not pay.</p></div>
+</section>
+
+<section class="slide" data-n="refs">
+  <h1>References</h1>
+  <div class="body refs" style="top:100px;bottom:40px">
+    <div>Anderson, L. R.; Holt, C. A. (1997): Information cascades in the laboratory, AER 87(5), 847–862.</div>
+    <div>Banerjee, A. V. (1992): A simple model of herd behavior, QJE 107(3), 797–817.</div>
+    <div>Barber, B. M.; Odean, T. (2000): Trading is hazardous to your wealth, JF 55(2), 773–806.</div>
+    <div>Bikhchandani, S.; Hirshleifer, D.; Welch, I. (1992): A theory of fads, fashion, custom, and cultural change as informational cascades, JPE 100(5), 992–1026.</div>
+    <div>Blackwell, D. (1951): Comparison of experiments, Proc. 2nd Berkeley Symposium, 93–102.</div>
+    <div>Froot, K. A.; Scharfstein, D. S.; Stein, J. C. (1992): Herd on the street: informational inefficiencies in a market with short-term speculation, JF 47(4), 1461–1484.</div>
+    <div>Grossman, S. J.; Stiglitz, J. E. (1980): On the impossibility of informationally efficient markets, AER 70(3), 393–408.</div>
+    <div>Hauser, F. (2026): Complexity in Financial Markets, lecture C1, University of Innsbruck.</div>
+    <div>Hirshleifer, J. (1971): The private and social value of information and the reward to inventive activity, AER 61(4), 561–574.</div>
+    <div>Huber, J.; Angerer, M.; Kirchler, M. (2011): Experimental asset markets with endogenous choice of costly asymmetric information, Experimental Economics 14(2), 223–240.</div>
+    <div>Huber, J.; Kirchler, M.; Sutter, M. (2008): Is more information always better? Experimental financial markets with cumulative information, JEBO 65, 86–104.</div>
+    <div>Lopez-Lira, A.; Tang, Y. (2026): Can ChatGPT forecast stock price movements? JFE 184, 104335.</div>
+    <div>Morris, S.; Shin, H. S. (2002): Social value of public information, AER 92(5), 1521–1534.</div>
+    <div>Odean, T. (1998): Volume, volatility, price, and profit when all traders are above average, JF 53(6), 1887–1934.</div>
+    <div>Oskamp, S. (1965): Overconfidence in case-study judgments, Journal of Consulting Psychology 29(3), 261–265.</div>
+    <div>Radner, R.; Stiglitz, J. (1984): A nonconcavity in the value of information, in: Boyer, M.; Kihlstrom, R. (eds.), Bayesian Models in Economic Theory, North-Holland, 33–52.</div>
+    <div>Rieder, M. J. (2025): How heterogeneous information induces market inefficiencies, JBEF 46, 101052.</div>
+    <div>Schredelseker, K. (2014): Pascal's Wager and Information, Journal of Forecasting 33, 455–470.</div>
+    <div>Sharpe, W. F. (1991): The arithmetic of active management, FAJ 47(1), 7–9.</div>
+    <div>Svenson, O. (1981): Are we all less risky and more skillful than our fellow drivers? Acta Psychologica 47(2), 143–148.</div>
+    <div>Svensson, L. E. O. (2006): Social value of public information: Morris and Shin (2002) is actually pro transparency, not con, AER 96(1), 448–452.</div>
+    <div>Tsai, C. I.; Klayman, J.; Hastie, R. (2008): Effects of amount of information on judgment accuracy and confidence, OBHDP 107(2), 97–105.</div>
+    <div>Tumminello, M.; Lillo, F.; Piilo, J.; Mantegna, R. N. (2012): Identification of clusters of investors from their real trading activity in a financial market, New Journal of Physics 14, 013041.</div>
+  </div>
+</section>
+
+<section class="slide" data-n="b1">
+  <p class="sec">Backup</p>
+  <h1>Backup: price formation by hand</h1>
+  <p class="sub">Sequence 0001101101 (Schredelseker 2014, p. 457)</p>
+  <div class="body row">
+    <table class="t" style="width:560px;align-self:flex-start"><tr><th>Price range</th><th>buyers</th><th>sellers</th><th>units traded</th></tr><tr><td>3.5 &lt; P &lt; 4.0</td><td>9</td><td>1</td><td>1</td></tr><tr class="hi"><td>4.0 &lt; P &lt; 4.5</td><td>6</td><td>4</td><td>4</td></tr><tr><td>4.5 &lt; P &lt; 5.0</td><td>2</td><td>8</td><td>2</td></tr></table>
+    <div class="col"><p>Maximum turnover in 4.0–4.5, so P = 4.25. V = 5: underpriced by 0.75, buyers win.</p><p>Six buyers, four sellers: each buyer gets 0.75 × 4/6 = 0.50, each seller loses 0.75.</p><p>6 × 0.50 − 4 × 0.75 = 0: the market is zero-sum.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-n="paths">
+  <p class="sec">Backup</p>
+  <h1>Backup: where the losses come from</h1>
+  <p class="sub">Estimates of T0 to T9 for one sequence (blue) against the market price (red)</p>
+  <div class="body row" id="paths"></div>
+  <p class="muted" style="position:absolute;left:56px;bottom:48px;font-size:14px">After Schredelseker (2014), Figs. 1–3, and Hauser, Complexity in Financial Markets, lecture C1. Price computed with the call-market rule.</p>
+</section>
+
+<section class="slide" data-n="precision">
+  <p class="sec">Backup</p>
+  <h1>Backup: precision and common errors</h1>
+  <p class="sub">More information changes two things at once</p>
+  <div class="body row" style="top:175px">
+    <div class="col"><p class="lab">01 Precision</p><math display="block" style="text-align:left"><mi>Var</mi><mo stretchy="false">(</mo><msub><mi>e</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>=</mo><mn>0.25</mn><mspace width="0.2em"></mspace><mo stretchy="false">(</mo><mn>10</mn><mo>−</mo><mi>n</mi><mo stretchy="false">)</mo></math><p style="margin-top:14px">Every coin makes your estimate more precise.</p></div>
+    <div class="col"><p class="lab">02 Covariance</p><math display="block" style="text-align:left"><mi>Corr</mi><mo stretchy="false">(</mo><msub><mi>e</mi><mn>2</mn></msub><mo>,</mo><msub><mi>e</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>=</mo><msqrt><mfrac><mn>7</mn><mn>8</mn></mfrac></msqrt><mo>≈</mo><mn>0.94</mn></math><p style="margin-top:14px">Nested information makes traders share the same errors.</p></div>
+  </div>
+  <p class="big" style="position:absolute;left:56px;bottom:90px">The market pays for being on the right side of the price, not for being precise.</p>
+</section>
+
+<section class="slide" data-n="matrix">
+  <p class="sec">Backup</p>
+  <h1>Backup: Hirshleifer's point in a 2 × 2 game</h1>
+  <p class="sub">A coin decides whether matrix x or y counts. Payoffs A / B.</p>
+  <div class="body row">
+    <div><p class="lab">Matrix x</p><table class="t"><tr><th></th><th>B1</th><th>B2</th></tr><tr><td>A1</td><td>9 / 8</td><td>14 / 5</td></tr><tr><td>A2</td><td>6 / 13</td><td>13 / 12</td></tr></table>
+      <p class="lab" style="margin-top:16px">Matrix y</p><table class="t"><tr><th></th><th>B1</th><th>B2</th></tr><tr><td>A1</td><td>1 / 1</td><td>7 / 5</td></tr><tr><td>A2</td><td>5 / 8</td><td>9 / 10</td></tr></table></div>
+    <div class="col"><table class="t" style="width:100%"><tr><th>Information</th><th>A</th><th>B</th></tr><tr><td>nobody knows</td><td>11.0</td><td>11.0</td></tr><tr class="hi"><td>both know (public)</td><td>9.0</td><td>9.0</td></tr><tr><td>only A knows</td><td>7.0</td><td>8.0</td></tr><tr><td>only B knows</td><td>8.0</td><td>6.5</td></tr></table>
+      <p style="margin-top:16px">Matrix x hides a prisoner's dilemma; uncertainty protected both players. Each would pay up to 2 points to keep the coin secret.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-n="b3">
+  <p class="sec">Backup</p>
+  <h1>Backup: Rieder's correlation, cumulative case</h1>
+  <p class="sub">Information grows like a Brownian motion; the price is the average of all bids</p>
+  <div class="body">
+    <math display="block" style="text-align:left"><msub><mi>ρ</mi><mrow><mi>u</mi><mi>v</mi></mrow></msub><mo stretchy="false">(</mo><mi>j</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><mn>3</mn><msup><mi>j</mi><mn>2</mn></msup><mo>−</mo><msup><mi>m</mi><mn>2</mn></msup></mrow><msqrt><mrow><mo stretchy="false">(</mo><mn>6</mn><msup><mi>j</mi><mn>2</mn></msup><mo>−</mo><mn>6</mn><mi>j</mi><mi>m</mi><mo>+</mo><mn>2</mn><msup><mi>m</mi><mn>2</mn></msup><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mn>6</mn><mi>m</mi><mi>n</mi><mo>−</mo><mn>4</mn><msup><mi>m</mi><mn>2</mn></msup><mo stretchy="false">)</mo></mrow></msqrt></mfrac></math>
+    <math display="block" style="text-align:left;margin-top:24px"><mi>Corr</mi><mo stretchy="false">(</mo><msub><mi>e</mi><mi>m</mi></msub><mo>,</mo><msub><mi>e</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>=</mo><msqrt><mfrac><mrow><mn>10</mn><mo>−</mo><mi>n</mi></mrow><mrow><mn>10</mn><mo>−</mo><mi>m</mi></mrow></mfrac></msqrt><mo>,</mo><mspace width="0.6em"></mspace><mi>m</mi><mo>&lt;</mo><mi>n</mi></math>
+    <p class="muted" style="margin-top:30px">With m = n: the uninformed trader has ρ = −0.50, the minimum ρ = −0.615 lies at j ≈ 0.24 m, break-even at j = m/√3 ≈ 0.58 m. Coin market: m = 9, n = 10, variance 0.25 per coin, so σ<sub>v</sub> = 1.</p>
+  </div>
+</section>
+
+<div id="liveBox" hidden><div class="liveQR" data-px="300"></div><p style="margin:8px 0 2px"><b class="liveN">0</b> phones joined · session <b id="liveRoom"></b></p><p class="muted" style="font-size:13px"><span class="liveUrl"></span></p>
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button id="liveReseat">Seat late joiners</button><button id="liveNew">New session</button><button id="liveClose">Close</button></div></div>
+<div class="foot"><span>Information Economics · Seminar topic 3</span><span style="display:flex;gap:10px;align-items:center"><button id="livePill" hidden>📱</button><button class="nav" id="navPrev" aria-label="Previous slide">‹</button><span id="counter" title="Tap: speaker notes" style="cursor:pointer"></span><button class="nav" id="navNext" aria-label="Next slide">›</button></span></div>
+<div id="progress"></div>
+</div></div>
+
+<div id="notes" hidden></div>
+<div id="help" hidden><b>Keys</b><br>→ / Space / PageDown: next · ← / PageUp: back<br>Home / End: first / last<br>N: speaker notes · P: presenter window<br>F: fullscreen · H: this help</div>
+
+<script>
+const N=10;
+function grid(step){const g=[];for(let p=0;p<=N+1e-9;p+=step)g.push(Math.round(p*1000)/1000);return g;}
+const G25=grid(0.25),G05=grid(0.05);
+// orders: array of {k:'L',e} | {k:'B'} | {k:'S'} | {k:'T'} | {k:'N'} (no trade)
+function clear(orders,G){
+  let best=-1,bestImb=1e9,lo=null,hi=null;
+  for(const P of G){let b=0,s=0;
+    for(const o of orders){if(o.k==='L'){if(o.e>P)b++;else if(o.e<P)s++;}else if(o.k==='B')b++;else if(o.k==='S')s++;else if(o.k==='T'){if(P>N/2)b++;else if(P<N/2)s++;}}
+    const t=Math.min(b,s),imb=Math.abs(b-s);
+    if(t>best||(t===best&&imb<bestImb)){best=t;bestImb=imb;lo=hi=P;}
+    else if(t===best&&imb===bestImb){hi=P;}
+  }
+  const P=(lo+hi)/2;
+  const side=orders.map(o=>o.k==='L'?Math.sign(o.e-P):o.k==='B'?1:o.k==='S'?-1:o.k==='T'?Math.sign(P-N/2):0);
+  return {P,side,vol:best};
+}
+function pay(V,P,side){const nb=side.filter(x=>x===1).length,ns=side.filter(x=>x===-1).length;
+  if(!nb||!ns)return side.map(()=>0);const F=nb/ns;
+  return side.map(s=>s===1?(V-P)/Math.max(F,1):s===-1?(P-V)*Math.min(F,1):0);}
+const SEQS=[];for(let m=0;m<1024;m++){const s=[];for(let j=0;j<N;j++)s.push((m>>(N-1-j))&1);SEQS.push(s);}
+const binom=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+// expected payoffs over all sequences. strat: array 'F'|'P'|'T'; pil; noise d (MC draws); nature: fixed P=5
+function expected(strat,{pil=0,noise=0,draws=40,nature=false,rng=Math.random}={}){
+  const n=strat.length,tot=new Array(n).fill(0),win=new Array(n).fill(0),lose=new Array(n).fill(0);let dev=0,W=0;
+  const pas=strat.map((s,i)=>s==='P'?i:-1).filter(i=>i>=0),k=pas.length;
+  const reps=noise>0?draws:1,G=noise>0?G05:G25;
+  for(let r=0;r<reps;r++)for(const seq of SEQS){
+    const V=seq.reduce((a,b)=>a+b,0);
+    const cum=[0];for(let j=0;j<N;j++)cum.push(cum[j]+seq[j]);
+    const est=strat.map((s,i)=>{const m=Math.max(i,pil);return cum[m]+(N-m)/2+(noise>0?(rng()*2-1)*noise:0);});
+    if(nature){ // trade against fixed price 5
+      strat.forEach((s,i)=>{const sd=s==='F'?Math.sign(est[i]-5):0;const g=sd*(V-5);tot[i]+=g;if(g>0)win[i]++;else if(g<0)lose[i]++;});
+      W+=1;continue;}
+    for(let j=0;j<=k;j++){const w=k?binom(k,j)/2**k:1;
+      // passives: first j buy, rest sell (exchangeable)
+      const ord=strat.map((s,i)=>s==='F'?{k:'L',e:est[i]}:s==='T'?{k:'T'}:{k:'P'});
+      let c=0;const pbuy=ord.map(o=>o.k==='P'?(c++<j?{k:'B'}:{k:'S'}):o);
+      const {P,side}=clear(pbuy,G);const g=pay(V,P,side);
+      // passive expected: average buyer/seller payoff
+      let gb=0,gs=0;pbuy.forEach((o,i)=>{if(o.k==='B')gb=g[i];if(o.k==='S')gs=g[i];});
+      strat.forEach((s,i)=>{let x;if(s==='P'){x=k?(j/k)*gb+((k-j)/k)*gs:0;
+          const pw=(j/k)*(gb>0)+((k-j)/k)*(gs>0),pl=(j/k)*(gb<0)+((k-j)/k)*(gs<0);win[i]+=w*pw;lose[i]+=w*pl;}
+        else{x=g[i];if(x>1e-12)win[i]+=w;else if(x<-1e-12)lose[i]+=w;}
+        tot[i]+=w*x;});
+      dev+=w*(P-V)**2;W+=w;}
+  }
+  return {g:tot.map(x=>x/W),win:win.map(x=>x/W),lose:lose.map(x=>x/W),ineff:nature?null:dev/W};
+}
+
+</script>
+<script src="config.js"></script>
+<script>
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+/* Live layer transport. Two backends with the same tiny API:
+   - Firebase Realtime Database (when window.LIVE_CONFIG.firebase is set)
+   - local mock over BroadcastChannel + localStorage (?mock=1), for testing on one computer
+   API: net.set(path,val) · net.update(path,obj) · net.on(path,cb) -> unsubscribe · net.ready (Promise<boolean>) */
+function makeNet(room){
+  const cfg=window.LIVE_CONFIG||{};
+  const mock=/[?&]mock=1/.test(location.search)||cfg.mock===true;
+  const base="rooms/"+room;
+  if(mock){
+    const KEY="livemock:"+room,ch=new BroadcastChannel(KEY),subs=[];
+    const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}};
+    const get=(tree,p)=>p.split("/").filter(Boolean).reduce((o,k)=>o==null?undefined:o[k],tree);
+    const put=(tree,p,v)=>{const ks=p.split("/").filter(Boolean);let o=tree;ks.slice(0,-1).forEach(k=>{if(typeof o[k]!=="object"||o[k]===null)o[k]={};o=o[k];});if(v===null||v===undefined)delete o[ks[ks.length-1]];else o[ks[ks.length-1]]=v;};
+    const fire=()=>{const t=load();subs.forEach(s=>s.cb(get(t,s.p)??null));};
+    ch.onmessage=fire;addEventListener("storage",e=>{if(e.key===KEY)fire();});
+    const write=f=>{const t=load();f(t);localStorage.setItem(KEY,JSON.stringify(t));ch.postMessage(1);fire();};
+    return {mock:true,ready:Promise.resolve(true),
+      set:(p,v)=>write(t=>put(t,p,v)),
+      update:(p,obj)=>write(t=>Object.entries(obj).forEach(([k,v])=>put(t,p+"/"+k,v))),
+      on:(p,cb)=>{const s={p,cb};subs.push(s);setTimeout(()=>cb(get(load(),p)??null),0);return ()=>subs.splice(subs.indexOf(s),1);},
+      clientId:()=>{let id=sessionStorage.getItem("liveid");if(!id){id=Math.random().toString(36).slice(2,10);sessionStorage.setItem("liveid",id);}return id;}};
+  }
+  if(!cfg.firebase||typeof firebase==="undefined")return null;
+  let app;try{app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg.firebase);}catch(e){console.warn(e);return null;}
+  const db=firebase.database(app),ref=p=>db.ref(base+"/"+p);
+  const ready=new Promise(res=>{const t=setTimeout(()=>res(false),8000);db.ref(".info/connected").on("value",s=>{if(s.val()){clearTimeout(t);res(true);}});});
+  return {mock:false,ready,
+    set:(p,v)=>ref(p).set(v).catch(e=>console.warn(e)),
+    update:(p,obj)=>ref(p).update(obj).catch(e=>console.warn(e)),
+    on:(p,cb)=>{const r=ref(p),h=s=>cb(s.val());r.on("value",h);return ()=>r.off("value",h);},
+    clientId:()=>{let id=null;try{id=localStorage.getItem("liveid");}catch(e){}if(!id){id=Math.random().toString(36).slice(2,10);try{localStorage.setItem("liveid",id);}catch(e){}}return id;}};
+}
+
+</script>
+<script>
+const DATA={"notes":{"title":{"t":"0:00–0:30","s":"Good afternoon. My topic today is the theorem of non-negative information values, and why it does not hold in markets. Put simply: can more information make you worse off? Before I explain anything, I want to know what you think."},"question":{"t":"0:30–2:00","s":"Here is my question for all of you: would you ever pay money in order NOT to receive a piece of information?\n[Pause. Let them think for a few seconds.]\nWho would say yes? … And who says no, information can only help?\n[Count roughly and remember the split.]\n[Ask one of the \"no\" side:] Why not?\n[Expected answer: \"If it is useless, I can simply ignore it.\"]\nThat is exactly the argument behind the theorem. Keep your answer in mind, we come back to it at the end."},"agenda":{"t":"2:00–2:30","s":"Four claims for today. One: knowing a little is worse than knowing nothing. Two: the formula and the lab disagree about that. Three: herding is rational. Four: half an analyst is worse than none. The model you know from the lecture, so I keep that part short and let you play it instead. And after every block I'll ask you one short question."},"theorem":{"t":"2:30–5:00","s":"The classic result from decision theory. The first term is what you can expect if you first observe a signal s and then choose the best action; the second term is what you get without the signal. The difference is the value of information, and it can never be negative: if the signal is useless, you ignore it. Information is an option. Blackwell (1951).\nThe hidden assumption: your payoff does not depend on what others know. True against nature, the rain does not care what you know. Not true in a game. Hirshleifer showed already in 1971 that in a game public information can make everybody worse off. And a market is a game: the price is made by everyone's information."},"pascal":{"t":"5:00–7:30","s":"First paper: Schredelseker (2014), \"Pascal's Wager and Information\".\nPascal: if you believe and God exists, you win everything; if he does not, you lose nothing. So believe.\nThe standard argument for analysis has the same structure: if the market is efficient, forecasting gains nothing but not forecasting loses nothing either; if it is inefficient, forecasters win a lot and non-forecasters lose a lot. So forecast.\nSchredelseker: the bottom-right cell is wrong. Someone who does not forecast, a coin-flipper or an index investor, is on the right side as often as on the wrong side. He earns the average in both columns.\nRelative to the average the market is zero-sum, so not everyone who knows more than nothing can beat it. Somebody with information must lose. Who? Let's find out ourselves."},"coins":{"t":"7:30–8:30","s":"The coin market from the lecture, in one minute. Ten coins decide the value. Trader Tn sees the first n coins, information is nested. Estimate: the ones you see plus one half per unseen coin, T4 here: 6. Buy if your estimate is above the price, sell if below. The price is set where most units trade."},"demo":{"t":"8:30–14:00","s":"Now you are the market. [Hand out cards T0 upwards; with 8 people T0–T7, the computer plays T8 and T9.] Each of you sees only your own coins. Write one price on your card: below it you buy, above it you sell.\n[Collect the cards. Press R1, type in the prices. Empty rows are played by the computer, shown with a dashed ring. Press \"Clear market\".]\nThe market clears at [P]. These traders buy, these sell. Before I reveal: who do you think wins?\n[Take one or two guesses, then \"Reveal coins\".]\nThe value is [V]. [Use names:] You were T3 and you bought. Why? And T0, who knew nothing, won. Why?\n[If time: a second round with R2.]"},"worlds":{"t":"14:00–15:30","s":"One round is anecdotal, so here are all 1,024 sequences. [Blue line first.] Against nature, at a fixed price of five, every coin helps.\n[Click \"Market price\".] In the market, T0 to T4 lose. T2 loses more than T0, although it knows more. Same traders, same rule: the only difference is that the price reacts. That is the theorem failing. Now: what do the papers add?\n[Ask the room, 1 min:] We are finance students. We know something, but not everything. Which trader are we? [Expected: T2 to T4. Punch line: \"So by this model, our degree makes us worse traders, unless we go all the way.\"]"},"rieder":{"t":"15:30–18:30","s":"Second paper: Rieder (2025). In 2024 Professor Schredelseker wrote that an analytical model would be \"far beyond our intellectual capacity\". Rieder derives one.\nYour expected return is a constant, times the size of the mispricing, times the correlation between your position and the mispricing. For nested information he gets this correlation in closed form.\n[Click \"Show Rieder's formula\".] With the coin market's parameters, the formula matches the simulation with a correlation of 0.996. Worst trader at 24 percent of the information, T2; break-even at 58 percent, T5.\nTwo insights. A passive trader has correlation zero, so expected return zero: no information is information. And in Rieder's non-cumulative case, where everyone collects independent pieces, more information is always better. So the theorem fails because information is nested: everybody knows the same first coins. Keep that in mind, it comes back with herding.\n[Ask, 1 min:] If the problem is sameness: is a finance degree, where everyone learns the same models, part of the problem?"},"hks":{"t":"18:30–21:00","s":"Third paper: Huber, Kirchler and Sutter (2008). The coin market in the lab, here in Innsbruck, real money, seven markets, twenty periods.\nBlue is the lab, grey the simulation. Reading one: a J. The authors' reading: I0 to I5 are not significantly different, information does not help but does not significantly hurt either; only from I6 upwards does it pay. Same in a double auction and with dividends.\nAnd: the less-informed learned. I4 went from minus 0.47 to plus 0.05. Quick question: J or flat, how do you read it?\n[Short answers only, the big discussion comes later.]\nSo far the model. But why should real people behave like T2? Two reasons: herding and psychology.\n[Ask the professor directly, friendly:] The authors call their result \"clearly inconsistent\" with your 1984 model. Professor, how do you read it: J or flat line? [Let him talk. This is the most valuable minute of the session.]"},"cascade":{"t":"21:00–27:00","s":"A game. [Hand out the folded urn cards in order, player 1 to player 8.]\nI have two urns. Urn A has two light balls and one dark ball. Urn B has one light and two dark. A coin decided which urn we use. Each of you has drawn one ball, it is on your card. Only you see it. Don't show anyone.\nOne after the other, you say out loud: A or B. You hear everybody before you. You get a point if you are right.\n[Player 1, 2, 3 … click each answer. The bar shows what the room publicly knows.]\n[Watch for the moment the display says \"cascade\": from now on every guess is the same, whatever the ball.]\n[At the end: \"Reveal balls\".] Here are your private balls. Pooled, they say [x]. The room said [y].\n[If the cascade was wrong:] Nobody made a mistake. Every single one of you acted rationally. And still the room got it wrong.\n[If no cascade formed: say so; press \"Rational play\" to show what a Bayesian room would have done.]"},"cascade2":{"t":"27:00–29:00","s":"What happened? After two equal answers, the public information is worth more than your own ball. With two balls for A and your own ball for B, the probability of A is still two thirds, so you say A, whatever you drew. That is rational.\nBut from that moment, your answer tells the others nothing. Everybody after you is in the same position. Private information stops flowing into the public. That is an information cascade: Bikhchandani, Hirshleifer and Welch, and Banerjee, both 1992. Anderson and Holt (1997) ran exactly this game in the lab: rational cascades formed in most periods in which they could.\nAnd this is our theorem again: each of you used more information than the person before, the public history plus your ball. And the room as a whole knew less than if everybody had just said their own ball. Same as in the coin market: everybody conditions on the same public information, and so everybody makes the same error.\n[Ask, 1 min:] Where have you followed the crowd against your own information? A restaurant, a stock, a course choice? Was it rational?"},"herd":{"t":"29:00–31:30","s":"Is there something like this in real markets? Two pieces.\nFroot, Scharfstein and Stein (1992), \"Herd on the street\": a speculator with a short horizon only profits if others trade on his information after him. So it pays to study what everybody else studies. Traders herd on the same information, even on information that has nothing to do with fundamentals.\nAnd Tumminello and co-authors (2012) found it in the data: complete Finnish trading records in Nokia, 1998 to 2003. More than eleven thousand investors; 356 clusters of investors who buy and sell on the same days more often than chance; the largest cluster is 527 households.\nThat is the covariance mechanism, outside the model: many people, same information, same time."},"mshin":{"t":"31:30–34:00","s":"If herding happens around public information, is more public information then a bad thing? Morris and Shin (2002), \"Social value of public information\".\nEverybody wants to be close to the true value, but also close to what the others do, like in a market where you care about the price, or in Keynes' beauty contest. r measures how much you care about the others.\nThen the public signal gets more weight than it deserves: here, alpha over alpha plus beta times one minus r, instead of the Bayesian weight. [Move r up: the red bar grows.] Everybody leans on the same signal, so everybody makes the same error.\nTheir famous result: if private information is good enough, more precise public information lowers welfare. [Move the ratio slider until it flips.] But be fair: in their own model this needs private information to be at least eight times as precise as public, and Svensson (2006) argues that for realistic values the paper is actually pro transparency. So: possible, but not automatic. Keep this for thesis 2.\n[Ask, 1 min:] Should the ECB say less? Forward guidance means everybody looks at the same signal."},"psych":{"t":"34:00–37:00","s":"Second reason: psychology. Quick show of hands: who here is a better driver than the average person in this room? [Count.] Svenson (1981): most people say yes. That cannot be true for most of us.\nWhy does this matter? Look at the coin market again. T2 loses. Why does T2 trade at all? Because more information makes you feel better informed, not be better informed. Oskamp (1965): clinical psychologists read a case in four parts. After the first part they were right 26 percent of the time and 33 percent confident. With every part, their confidence rose; their accuracy did not. In the end more than 90 percent were overconfident. Tsai, Klayman and Hastie (2008) find the same with football forecasts: confidence rises faster than accuracy.\nIn markets: Odean (1998) shows in theory that overconfident traders trade too much and hurt themselves. And Barber and Odean (2000) show it in the data: 66,465 US households, 1991 to 1996. The fifth that traded most earned 11.4 percent a year, the market 17.9.\nThat is T2 in real life: a little information, a lot of confidence.\n[Ask, 1 min:] Is a trading app with push news an overconfidence machine? More information, more confidence, more trades."},"wtp":{"t":"37:00–40:00","s":"Back to my very first question: what would you pay for information? The value of buying coins, starting from T0.\nThe first four coins are worth practically nothing; coins one and two you would rather NOT have. The fifth coin alone adds 0.35.\n[Move the slider.] Give every coin a price. At ten cents, five coins cost 0.50 and bring 0.38: a loss. Nine coins cost 0.90 and bring 0.98: a gain. For every price, the best choice is no coins or nine coins. Never in between. Radner and Stiglitz (1984): the value of information is not concave.\nAnd this was tested here in Innsbruck: Huber, Angerer and Kirchler (2011) let traders buy one of five information levels. The uninformed earned the highest net returns, and over time people chose either full information or none. Which fits Grossman and Stiglitz (1980): if information costs money, markets cannot be fully efficient, someone must be paid for collecting it.\nIn real markets: index investors on one side, professionals with huge research budgets on the other, and the middle disappears.\nThat is the end of my presentation part. Now I'd like to discuss with you.\n[Ask, 1 min:] If half the information is worse than none: should mid-sized banks close their research departments?"},"t2q":{"t":"40:00–42:00","s":"Imagine you are T2. You know your two coins make you lose. What do you do? Keep using them? Flip a coin, so become passive? Or technical: read the price and buy if it is above five?\n[Ask the room. One person per option explains.]"},"t2a":{"t":"42:00–45:00","s":"[Click T2: Fundamental, Passive, Technical.]\nFundamental: minus 0.40. Passive: minus 0.10. Technical: plus 0.20. T2 does best by ignoring its own information and free-riding on the price, which is made by traders who know more. Herding, but on the better-informed.\nIn real markets there is a fourth option the model does not allow: not trading. That is what my agent in Professor Hauser's Complexity course does: it only trades from information level 6 upward. First trading round is tomorrow.\n[If time: switch T3 or T4 to technical too and watch T2's payoff fall. What if everyone copies? That is next week's topic.]"},"th1":{"t":"45:00–52:00","s":"First thesis: unless you analyse full-time, you should only buy ETFs. What do you think?\n[If quiet:] Who is T9 in the real world? Is an ETF the coin-flipper with correlation zero?\n[Push:] Sharpe (1991), the arithmetic of active management: before costs, the average active investor earns the market return; after costs, less. So who pays the T9s?\n[Counter:] If everybody buys ETFs, who sets the price? Grossman and Stiglitz again."},"th2":{"t":"52:00–59:00","s":"Second thesis: more mandatory disclosure protects small investors.\n[Move the slider from 0 to 4: when everybody sees the same first coins, T0 loses more, not less. Then to 8.]\n[If needed:] Morris and Shin say public information can coordinate everyone on the same error; Svensson says only in extreme cases. And the cascade game: more public history, less private information used. So why do regulators push disclosure? Is it about efficiency or about fairness?"},"th3":{"t":"59:00–66:00","s":"Third thesis: if every fund uses the same AI models, markets become less efficient.\n[If needed:] Same model, same data, same errors: the covariance effect and an information cascade at machine speed. Lopez-Lira and Tang (2026) find that ChatGPT can predict returns. What happens when everybody uses it? Is that T9, or a new herd?"},"close":{"t":"66:00–69:00","s":"Back to my first question: would you now pay not to receive information? [Quick show of hands, compare with the beginning.]\nMy take-away: against nature, information is an option. In a market, it is a bet on being different from the others. Nested information, herding on public signals and overconfidence all push people into the losing middle.\nSimulation, Rieder's closed form, the lab and real trading data point the same way: for most traders, more of the same information does not pay.\nThank you. Professor, I would be very interested in how you read the lab results."},"refs":{"t":"","s":"[Only show if asked.]"},"b1":{"t":"backup","s":"[If asked how the price is formed.] Sorted estimates: 3.5, 4.0, 4.0, 4.0, 4.5, 4.5, 4.5, 4.5, 5.0, 5.0. Between 4.0 and 4.5, six buy and four sell, so four units trade, the maximum. Midpoint: 4.25. The value is 5, so buyers win 0.75 per unit, scaled to 0.50 each because there are more buyers than sellers. Six times 0.50 equals four times 0.75: zero-sum."},"b3":{"t":"backup","s":"[If asked for Rieder's derivation.] Information grows like a Brownian motion, so the covariance of two information states is the minimum of the two levels. The price is the average of all bids. From these covariances you get the correlation between position and mispricing in closed form. With m = n, the uninformed trader has a correlation of minus 0.5, the minimum is minus 0.615 at 24 percent, and break-even is at 1 over root 3 of the information, about 58 percent."},"paths":{"t":"backup","s":"[If asked where the losses come from.] Trend: the informed win. Reversal: the middle overestimates together and loses. Oscillating: chance."},"precision":{"t":"backup","s":"[If asked why the middle loses.] Every coin makes your estimate more precise, but nested information makes neighbours share the same error: correlation of T2's and T3's errors is 0.94. The market pays for being on the right side of the price, not for being precise."},"matrix":{"t":"backup","s":"[If asked for Hirshleifer's argument.] Without information both players play the averaged game: 11 each. If both learn the matrix is x, a prisoner's dilemma appears and they end up with 9 and 8. Each would pay up to 2 points to keep the coin secret."}},"base":[-0.3428199404761905,-0.3750465029761905,-0.4004371279761906,-0.3685360863095239,-0.31319754464285715,0.03315662202380952,0.2167503720238095,0.39448474702380937,0.5136253720238095,0.6420200892857141],"nature":[0,0.5,0.5,0.75,0.75,0.9375,0.9375,1.09375,1.09375,1.23046875]};
+const $=id=>document.getElementById(id);
+const T=[...Array(10).keys()];
+const NOTES=DATA.notes;
+const H=(e,a)=>{if(window.LIVE&&window.LIVE.hook)window.LIVE.hook(e,a);};
+/* ---------- navigation ---------- */
+const slides=[...document.querySelectorAll(".slide")];let cur=0;let presenter=null;const t0=Date.now();
+function go(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,k)=>s.classList.toggle("on",k===cur));
+  $("counter").textContent=(cur+1)+" / "+slides.length;$("progress").style.width=((cur+1)/slides.length*100)+"%";
+  try{history.replaceState(null,"","#s"+(cur+1));}catch(e){}
+  const k=slides[cur].dataset.n,n=NOTES[k]||{t:"",s:""};
+  $("notes").innerHTML="<b>Slide "+(cur+1)+(n.t?" · "+n.t:"")+"</b>\n\n"+esc(n.s);
+  updatePresenter();onShow(k);H("show");}
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[c]);
+document.addEventListener("keydown",e=>{const tag=e.target.tagName;if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA")return;
+  if(["ArrowRight","PageDown"," "].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(["ArrowLeft","PageUp"].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==="Home")go(0);else if(e.key==="End")go(slides.length-1);
+  else if(e.key==="n"||e.key==="N")$("notes").hidden=!$("notes").hidden;
+  else if(e.key==="h"||e.key==="H")$("help").hidden=!$("help").hidden;
+  else if(e.key==="f"||e.key==="F"){const d=document.documentElement;(document.fullscreenElement?document.exitFullscreen():d.requestFullscreen?.())?.catch?.(()=>{});}
+  else if(e.key==="p"||e.key==="P")openPresenter();});
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);$("stage").style.transform="translate(-50%,-50%) scale("+s+")";}
+addEventListener("resize",fit);fit();
+$("navPrev").onclick=()=>go(cur-1);$("navNext").onclick=()=>go(cur+1);$("counter").onclick=()=>{$("notes").hidden=!$("notes").hidden;};
+let tx=null,ty=null;
+$("viewport").addEventListener("touchstart",e=>{if(e.target.closest("button,input,select,.seg,label")){tx=null;return;}tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+$("viewport").addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;tx=null;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(dx<0?cur+1:cur-1);},{passive:true});
+$("notes").addEventListener("click",()=>{$("notes").hidden=true;});
+function openPresenter(){try{presenter=window.open("","presenter","width=900,height=700");}catch(e){presenter=null;}
+  if(!presenter){$("notes").hidden=false;return;}
+  presenter.document.title="Presenter";presenter.document.body.style.cssText="font:18px/1.5 Calibri,Helvetica,Arial,sans-serif;background:#11181b;color:#e8eef0;padding:24px;margin:0";
+  presenter.document.body.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><b id="ps" style="font-size:22px"></b><span id="pt" style="font:28px Menlo,monospace;color:#9FC6D4"></span></div><div id="pn" style="white-space:pre-wrap;margin-top:16px"></div><p id="px" style="color:#97a6aa;margin-top:20px"></p><div style="margin-top:10px"><button id="pb">◀ Back</button> <button id="pf">Next ▶</button></div>';
+  presenter.document.getElementById("pb").onclick=()=>go(cur-1);presenter.document.getElementById("pf").onclick=()=>go(cur+1);
+  presenter.document.addEventListener("keydown",e=>{if(["ArrowRight","PageDown"," "].includes(e.key)){e.preventDefault();go(cur+1);}else if(["ArrowLeft","PageUp"].includes(e.key)){e.preventDefault();go(cur-1);}});
+  updatePresenter();setInterval(updatePresenter,1000);}
+function updatePresenter(){if(!presenter||presenter.closed)return;const d=presenter.document,k=slides[cur].dataset.n,n=NOTES[k]||{t:"",s:""};
+  d.getElementById("ps").textContent="Slide "+(cur+1)+" / "+slides.length+(n.t?"   ·   planned "+n.t:"");
+  const m=Math.floor((Date.now()-t0)/1000);d.getElementById("pt").textContent=String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+  d.getElementById("pn").textContent=n.s;const nx=slides[cur+1];d.getElementById("px").textContent=nx?"Next: "+nx.querySelector("h1").textContent:"End";}
+
+/* ---------- charts ---------- */
+function axes(W,H,L,R,Tp,B,lo,hi,step,cats,fmt=v=>v.toFixed(2)){
+  const y=v=>Tp+(hi-v)/(hi-lo)*(H-Tp-B),bw=(W-L-R)/cats.length,x=i=>L+bw*(i+.5);let h="";
+  for(let v=lo;v<=hi+1e-9;v+=step){h+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${Math.abs(v)<1e-9?"#9AA3A7":"#E6E3DB"}" stroke-width="${Math.abs(v)<1e-9?1.5:1}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`;}
+  cats.forEach((c,i)=>h+=`<text x="${x(i)}" y="${H-B+20}" text-anchor="middle">${c}</text>`);return {h,x,y,bw};}
+function lineSeries(a,vals,col,dash=""){return `<polyline points="${vals.map((v,i)=>a.x(i)+","+a.y(v)).join(" ")}" fill="none" stroke="${col}" stroke-width="3" ${dash?`stroke-dasharray="${dash}"`:""}/>`+vals.map((v,i)=>`<circle cx="${a.x(i)}" cy="${a.y(v)}" r="5" fill="${col}"/>`).join("");}
+const labels=["T0","T1","T2","T3","T4","T5","T6","T7","T8","T9"];
+
+/* worlds */
+let wShow={nat:true,mkt:false};
+function drawWorlds(){const a=axes(760,440,56,14,14,34,-0.6,1.4,0.2,labels);let h=a.h;
+  if(wShow.nat)h+=lineSeries(a,DATA.nature,"#2C6B83");if(wShow.mkt)h+=lineSeries(a,DATA.base,"#B3261E");
+  $("wChart").innerHTML=h;$("wNat").classList.toggle("on",wShow.nat);$("wMkt").classList.toggle("on",wShow.mkt);}
+$("wNat").onclick=()=>{wShow.nat=!wShow.nat;drawWorlds();};$("wMkt").onclick=()=>{wShow.mkt=!wShow.mkt;drawWorlds();};
+
+/* paths (backup) */
+(function(){const ps=[["111111111?","Trend: the informed win","Low-informed T0–T4 lose."],["111110000?","Reversal: the middle loses","T3–T7 overestimate together."],["101010101?","Oscillating: chance","Price ≈ value. No clear ranking."]];
+  let html="";ps.forEach(([q,a1,a2])=>{const s=q.replace("?","0").split("").map(Number);const cum=[0];s.forEach((c,j)=>cum.push(cum[j]+c));
+    const est=T.map(i=>cum[i]+(10-i)/2);const {P}=clear(est.map(e=>({k:"L",e})),G25);
+    const a=axes(370,300,34,8,10,30,4,10,1,T.map(String),v=>v.toFixed(0));
+    const svg=a.h+`<line x1="34" x2="362" y1="${a.y(P)}" y2="${a.y(P)}" stroke="#B3261E" stroke-width="2.5"/><text x="360" y="${a.y(P)-6}" text-anchor="end" style="fill:#B3261E">P = ${P.toFixed(2)}</text>`+lineSeries(a,est,"#2C6B83");
+    html+=`<div class="col"><p style="font:600 20px var(--mono);margin-bottom:6px">${q}</p><svg viewBox="0 0 370 300" width="370" height="300">${svg}</svg><p style="font-weight:600;margin-top:6px">${a1}</p><p class="muted">${a2}</p></div>`;});
+  $("paths").innerHTML=html;})();
+
+/* rieder */
+const RIEDER=T.map(j=>{const m=9,n=10,sv=0.5*Math.sqrt(n-2*m/3);return Math.sqrt(2/Math.PI)*sv*(3*j*j-m*m)/Math.sqrt((6*j*j-6*j*m+2*m*m)*(6*m*n-4*m*m));});
+let rOn=false;
+function drawRieder(){const a=axes(740,430,56,14,14,34,-0.6,0.8,0.2,labels);let h=a.h;
+  DATA.base.forEach((v,i)=>{const y0=a.y(0),y1=a.y(v);h+=`<rect x="${a.x(i)-a.bw*.3}" y="${Math.min(y0,y1)}" width="${a.bw*.6}" height="${Math.abs(y1-y0)}" fill="#A9C4CE"/>`;});
+  if(rOn)h+=lineSeries(a,RIEDER,"#B3261E");$("rChart").innerHTML=h;$("rTog").textContent=rOn?"Hide Rieder's formula":"Show Rieder's formula";$("rTog").classList.toggle("on",rOn);}
+$("rTog").onclick=()=>{rOn=!rOn;drawRieder();};
+
+/* hks */
+(function(){const H1=[-0.15,-0.22,-0.19,-0.22,-0.47,-0.19,0.19,0.16,0.44,0.65],H2=[-0.13,-0.18,-0.13,-0.13,0.05,-0.21,0,0.10,0.24,0.39];
+  const lab=H1.map((v,i)=>(v+H2[i])/2);const a=axes(740,440,56,14,14,60,-0.6,0.8,0.2,labels.map(l=>l.replace("T","I")));
+  $("hChart").innerHTML=a.h+lineSeries(a,DATA.base,"#B9B4A8")+lineSeries(a,lab,"#2C6B83")+`<g transform="translate(60,420)"><rect width="14" height="14" fill="#2C6B83" rx="3"/><text x="20" y="12">Lab, treatment T1 (7 markets × 20 periods)</text><rect x="330" width="14" height="14" fill="#B9B4A8" rx="3"/><text x="350" y="12">Simulation</text></g>`;})();
+
+/* bars with reference */
+function bars(svgId,vals,ref,W,H,hi){const lo=-Math.max(0.6,Math.ceil(Math.max(...vals.map(v=>-v),...ref.map(v=>-v))*5)/5),top=Math.max(0.8,Math.ceil(Math.max(...vals,...ref)*5)/5);
+  const a=axes(W,H,52,10,16,34,lo,top,0.2,labels);let h=a.h;
+  vals.forEach((v,i)=>{const y0=a.y(0),y1=a.y(v);h+=`<rect x="${a.x(i)-a.bw*.32}" y="${Math.min(y0,y1)}" width="${a.bw*.64}" height="${Math.max(1,Math.abs(y1-y0))}" fill="${v>=0?"#2C6B83":"#B3261E"}" ${i===hi?'stroke="#C9971C" stroke-width="3"':""}/>`;
+    h+=`<text x="${a.x(i)}" y="${v>=0?y1-6:y1+16}" text-anchor="middle" style="fill:#1E2B31;font-size:13px">${v.toFixed(2)}</text>`;
+    h+=`<line x1="${a.x(i)-a.bw*.4}" x2="${a.x(i)+a.bw*.4}" y1="${a.y(ref[i])}" y2="${a.y(ref[i])}" stroke="#6B777C" stroke-width="2" stroke-dasharray="4 3"/>`;});
+  $(svgId).innerHTML=h;}
+
+/* T2 lab */
+let tStrat=Array(10).fill("F");
+function drawT(){const r=expected(tStrat);bars("tChart",r.g,DATA.base,720,340,2);$("tT2").textContent=(r.g[2]>=0?"+":"")+r.g[2].toFixed(2);$("tIneff").textContent=r.ineff.toFixed(2);
+  document.querySelectorAll("[data-t2]").forEach(b=>b.classList.toggle("on",b.dataset.t2===tStrat[2]));
+  $("tChips").innerHTML=T.map(i=>`<span class="chip"><b>T${i}</b><span class="seg">${["F","P","T"].map(k=>`<button data-ti="${i}" data-k="${k}" class="${tStrat[i]===k?"on":""}">${k}</button>`).join("")}</span></span>`).join("");
+  $("tChips").querySelectorAll("button").forEach(b=>b.onclick=()=>{tStrat[+b.dataset.ti]=b.dataset.k;drawT();});}
+document.querySelectorAll("[data-t2]").forEach(b=>b.onclick=()=>{tStrat[2]=b.dataset.t2;drawT();});
+
+/* PIL */
+function drawPil(){const z=+$("pil").value;$("pilV").textContent=z;const r=expected(Array(10).fill("F"),{pil:z});bars("pChart",r.g,DATA.base,640,300,0);
+  $("pilT0").textContent=(r.g[0]>=0?"+":"")+r.g[0].toFixed(2);$("pilIn").textContent=r.ineff.toFixed(2);}
+$("pil").oninput=drawPil;
+
+/* live market */
+const lv={coins:"0111100000".split("").map(Number),prices:Array(10).fill(""),phone:Array(10).fill(false),cleared:false,revealed:false};
+function lvEst(i){let x=0;for(let j=0;j<i;j++)x+=lv.coins[j];return x+(10-i)/2;}
+function lvOrders(){return T.map(i=>{const v=parseFloat(lv.prices[i]);return isNaN(v)?{k:"L",e:lvEst(i),cpu:true}:{k:"L",e:v};});}
+function drawLv(full=true){
+  $("lvCoins").innerHTML=lv.coins.map(c=>lv.revealed?`<span class="coin ${c?"one":""}" style="width:36px;height:36px;font-size:16px;margin-right:4px">${c}</span>`:`<span class="coin hid" style="width:36px;height:36px;font-size:16px;margin-right:4px">?</span>`).join("");
+  const ord=lvOrders(),n=ord.filter(o=>!o.cpu).length,{P,side,vol}=clear(ord,G05),V=lv.coins.reduce((a,b)=>a+b,0),g=pay(V,P,side);
+  if(full){$("lvTbl").innerHTML="<tr><th>Trader</th><th>Price</th><th>Order</th><th>Payoff</th></tr>"+T.map(i=>`<tr><td>T${i}${lv.phone[i]?" 📱":""}</td><td>${lv.phone[i]?`<span id="lvs${i}" style="font:15px var(--mono)"></span>`:`<input type="number" id="lvp${i}" step="0.25" min="0" max="10" value="${lv.prices[i]}" placeholder="PC" aria-label="Price of T${i}, empty means the computer trades">`}</td><td id="lvo${i}"></td><td id="lvg${i}"></td></tr>`).join("");
+    T.forEach(i=>{const el=$("lvp"+i);if(!el)return;el.oninput=()=>{lv.prices[i]=el.value;lv.cleared=false;lv.revealed=false;drawLv(false);};
+      el.onkeydown=e=>{if(e.key==="Enter"){const nx=$("lvp"+(i+1));if(nx)nx.focus();else el.blur();}};});
+    document.querySelectorAll("#lvTbl td,#lvTbl th").forEach(c=>{c.style.padding="4px 10px";c.style.fontSize="16px";});}
+  T.forEach(i=>{const sp=$("lvs"+i);if(sp)sp.textContent=!lv.cleared?(lv.prices[i]!==""?"✓ received":"waiting …"):(lv.prices[i]!==""?Number(lv.prices[i]).toFixed(2):"PC");});
+  T.forEach(i=>{$("lvo"+i).innerHTML=lv.cleared?(side[i]>0?'<span class="pill buy">buy</span>':side[i]<0?'<span class="pill sell">sell</span>':'–'):'–';
+    $("lvg"+i).innerHTML=lv.revealed&&side[i]?`<span class="pill ${g[i]>0?"win":g[i]<0?"lose":""}">${g[i]>0?"+":""}${g[i].toFixed(2)}</span>`:"";});
+  const W=600,base=170,x=p=>24+Math.max(0,Math.min(10,p))/10*(W-48);let h=`<line x1="24" x2="${W-24}" y1="${base}" y2="${base}" stroke="#6B777C" stroke-width="1.5"/>`;
+  for(let p=0;p<=10;p++)h+=`<line x1="${x(p)}" x2="${x(p)}" y1="${base}" y2="${base+6}" stroke="#6B777C"/><text x="${x(p)}" y="${base+22}" text-anchor="middle">${p}</text>`;
+  if(!lv.cleared){h+=`<text x="${W/2}" y="80" text-anchor="middle" style="font-size:17px">${n} class prices entered, ${10-n} traders played by the computer. Prices stay hidden until the market is cleared.</text>`;}
+  else{const st={};ord.forEach((o,i)=>{if(o.k!=="L")return;const key=Math.round(o.e*4),k=st[key]=(st[key]||0)+1,cy=base-16-(k-1)*28,col=side[i]>0?"#2C6B83":side[i]<0?"#C9971C":"#9AA3A7";
+      h+=`<circle cx="${x(o.e)}" cy="${cy}" r="12" fill="${col}" ${o.cpu?'stroke="#1E2B31" stroke-width="2" stroke-dasharray="3 2"':""}/><text x="${x(o.e)}" y="${cy+4}" text-anchor="middle" style="fill:#fff;font-size:11px;font-weight:600">${i}</text>`;});
+    h+=`<line x1="${x(P)}" x2="${x(P)}" y1="22" y2="${base}" stroke="#C9971C" stroke-width="2" stroke-dasharray="5 3"/><text x="${x(P)}" y="16" text-anchor="middle" style="fill:#8a6611;font-size:15px;font-weight:600">P = ${P.toFixed(2)}</text>`;
+    if(lv.revealed)h+=`<line x1="${x(V)}" x2="${x(V)}" y1="38" y2="${base}" stroke="#B3261E" stroke-width="3"/><text x="${x(V)+(V>P?8:-8)}" y="48" text-anchor="${V>P?"start":"end"}" style="fill:#B3261E;font-size:15px;font-weight:600">V = ${V}</text>`;}
+  $("lvLine").innerHTML=h;
+  $("lvVerdict").textContent=!lv.cleared?"":!lv.revealed?`${vol} units trade at ${P.toFixed(2)}. Who wins?`:(P>V?`Overpriced by ${(P-V).toFixed(2)}: sellers win.`:P<V?`Underpriced by ${(V-P).toFixed(2)}: buyers win.`:"Fairly priced: nobody wins.");
+  $("lvClear").disabled=false;$("lvReveal").disabled=!lv.cleared;}
+document.querySelectorAll("#lvRounds button").forEach(b=>b.onclick=()=>{lv.coins=b.dataset.r.split("").map(Number);lv.prices=Array(10).fill("");lv.cleared=false;lv.revealed=false;
+  document.querySelectorAll("#lvRounds button").forEach(x=>x.classList.toggle("on",x===b));lv.phone=Array(10).fill(false);drawLv();H("lvRound");});
+$("lvClear").onclick=()=>{lv.cleared=true;drawLv(false);H("lv");};$("lvReveal").onclick=()=>{lv.revealed=true;drawLv(false);H("lv");};
+
+/* cascade game: urn A = 2 light + 1 dark, urn B = 1 light + 2 dark. Signal +1 = light (points to A), -1 = dark. */
+const CR=[{urn:"B",s:"LLDDDLDDDD"},{urn:"A",s:"LDLLDLLDLL"},{urn:"A",s:"DLDDLLLLDL"}];
+const cs={r:0,n:8,g:Array(10).fill(null),rev:false};
+const sig=i=>CR[cs.r].s[i]==="L"?1:-1;
+const pA=k=>Math.pow(2,k)/(Math.pow(2,k)+1);
+function cState(){/* public net count k before each player, informative flags, cascade flags */
+  let k=0;const before=[],inf=[],casc=[];
+  for(let i=0;i<cs.n;i++){before.push(k);const c=Math.abs(k)>=2;casc.push(c);const g=cs.g[i];
+    if(g===null){inf.push(false);continue;}
+    if(!c){inf.push(true);k+=g==="A"?1:-1;}else inf.push(false);}
+  return {before,inf,casc,k};}
+function ratGuess(k,s){const t=k+s;return t>0?"A":t<0?"B":(s>0?"A":"B");}
+function drawCascade(){const st=cState();const last=cs.g.slice(0,cs.n).findIndex(g=>g===null);const done=last===-1;
+  $("cPlayers").innerHTML=Array.from({length:cs.n},(_,i)=>{const g=cs.g[i],c=st.casc[i]&&g!==null;
+    const ball=cs.rev?`<span class="ball ${sig(i)>0?"l":"d"}"></span>`:`<span class="ball q"></span>`;
+    return `<div class="pl"><b>P${i+1}</b><span class="seg"><button data-ci="${i}" data-cg="A" class="${g==="A"?"on":""}">A</button><button data-ci="${i}" data-cg="B" class="${g==="B"?"on":""}">B</button></span>${ball}<span class="tag ${c?"c":""}">${g===null?"":c?"cascade":"reveals ball"}</span></div>`;}).join("");
+  $("cPlayers").querySelectorAll("button").forEach(b=>b.onclick=()=>{const i=+b.dataset.ci;cs.g[i]=cs.g[i]===b.dataset.cg?null:b.dataset.cg;drawCascade();H("urn");});
+  /* chart: public P(A) after each answer, and pooled private P(A) */
+  const W=760,H=230,L=46,R=14,Tp=12,B=30,x=i=>L+(W-L-R)*(i/(cs.n)),y=v=>Tp+(1-v)*(H-Tp-B);let h="";
+  [0,0.25,0.5,0.75,1].forEach(v=>h+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0.5?"#9AA3A7":"#E6E3DB"}" ${v===0.5?'stroke-dasharray="4 3"':""}/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${Math.round(v*100)}%</text>`);
+  for(let i=0;i<=cs.n;i++)h+=`<text x="${x(i)}" y="${H-8}" text-anchor="middle">${i===0?"start":"P"+i}</text>`;
+  let k=0,pts=[[0,pA(0)]],pk=0,pool=[[0,0.5]];
+  for(let i=0;i<cs.n;i++){if(cs.g[i]===null)break;if(st.inf[i])k+=cs.g[i]==="A"?1:-1;pts.push([i+1,pA(k)]);}
+  for(let i=0;i<cs.n;i++){pk+=sig(i);pool.push([i+1,pA(pk)]);}
+  if(cs.rev)h+=`<polyline points="${pool.map(([i,v])=>x(i)+","+y(v)).join(" ")}" fill="none" stroke="#B3261E" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+  h+=`<polyline points="${pts.map(([i,v])=>x(i)+","+y(v)).join(" ")}" fill="none" stroke="#2C6B83" stroke-width="3"/>`+pts.map(([i,v])=>`<circle cx="${x(i)}" cy="${y(v)}" r="5" fill="#2C6B83"/>`).join("");
+  $("cChart").innerHTML=`<text x="${L}" y="10" style="font-size:12px">P(urn A)</text>`+h;
+  const pub=pA(st.k),used=st.inf.filter(Boolean).length,answered=cs.g.slice(0,cs.n).filter(g=>g!==null).length;
+  $("cPub").innerHTML=`P(urn A) = ${Math.round(pub*100)} %<br><span class="muted" style="font-size:17px">${used} of ${answered} answers carried information${Math.abs(st.k)>=2?" · cascade on "+(st.k>0?"A":"B"):""}</span>`;
+  let v="";if(cs.rev){const pooled=pA(pk),room=cs.g.slice(0,cs.n).filter(g=>g==="A").length>=cs.g.slice(0,cs.n).filter(g=>g==="B").length?"A":"B";
+    const right=cs.g.slice(0,cs.n).filter(g=>g===CR[cs.r].urn).length;
+    v=`The urn was ${CR[cs.r].urn}. Pooled, your ${cs.n} balls say ${pooled>=0.5?"A":"B"} with ${Math.round(Math.max(pooled,1-pooled)*100)} %. ${right} of ${answered} answers were right.`;}
+  $("cVerdict").textContent=v;$("cReveal").textContent=cs.rev?"Hide balls":"Reveal balls";
+  document.querySelectorAll("#cRounds button").forEach(b=>b.classList.toggle("on",+b.dataset.c===cs.r));}
+$("cN").innerHTML=[4,5,6,7,8,9,10].map(n=>`<option ${n===8?"selected":""}>${n}</option>`).join("");
+$("cN").onchange=()=>{cs.n=+$("cN").value;drawCascade();H("urn");};
+document.querySelectorAll("#cRounds button").forEach(b=>b.onclick=()=>{cs.r=+b.dataset.c;cs.g=Array(10).fill(null);cs.rev=false;drawCascade();H("urnRound");});
+$("cReveal").onclick=()=>{cs.rev=!cs.rev;drawCascade();H("urn");};
+$("cReset").onclick=()=>{cs.g=Array(10).fill(null);cs.rev=false;drawCascade();H("urnReset");};
+$("cAuto").onclick=()=>{cs.g=Array(10).fill(null);let k=0;for(let i=0;i<cs.n;i++){const g=ratGuess(k,sig(i));cs.g[i]=g;if(Math.abs(k)<2)k+=g==="A"?1:-1;}drawCascade();H("urn");};
+
+/* Morris & Shin */
+function drawMs(){const r=+$("msR").value,q=+$("msB").value;$("msRV").textContent=r.toFixed(2);$("msBV").textContent=q.toFixed(1);
+  const bay=1/(1+q),eq=1/(1+q*(1-r));const W=520,H=260,L=40,B=30,y=v=>12+(1-v)*(H-12-B);let h="";
+  [0,0.25,0.5,0.75,1].forEach(v=>h+=`<line x1="${L}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}" stroke="#E6E3DB"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`);
+  [["Bayesian weight",bay,"#A9C4CE"],["Weight in equilibrium",eq,"#B3261E"]].forEach(([n,v,c],k)=>{const x0=L+50+k*220;h+=`<rect x="${x0}" y="${y(v)}" width="120" height="${y(0)-y(v)}" fill="${c}" rx="2"/><text x="${x0+60}" y="${y(v)-8}" text-anchor="middle" style="fill:#1E2B31;font-size:16px">${v.toFixed(2)}</text><text x="${x0+60}" y="${H-8}" text-anchor="middle" style="font-size:14px">${n}</text>`;});
+  $("msChart").innerHTML=h;const c=1-r,dW=1-q*c*(2*r-1);/* sign of dE[W]/dα, with α = 1 */
+  $("msVerdict").innerHTML=dW<0?`<span style="color:var(--red)">Here, sharper public information lowers welfare.</span>`:`<span style="color:var(--teal)">Here, sharper public information still raises welfare.</span>`;}
+$("msR").oninput=drawMs;$("msB").oninput=drawMs;
+
+/* Barber & Odean bars */
+(function(){const d=[["Most active fifth",11.4,"#B3261E"],["Average household",16.4,"#A9C4CE"],["Market",17.9,"#2C6B83"]];const W=520,H=300,L=40,B=34,y=v=>14+(1-v/20)*(H-14-B);let h="";
+  [0,5,10,15,20].forEach(v=>h+=`<line x1="${L}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}" stroke="#E6E3DB"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}%</text>`);
+  d.forEach(([n,v,c],k)=>{const x0=L+30+k*155;h+=`<rect x="${x0}" y="${y(v)}" width="110" height="${y(0)-y(v)}" fill="${c}" rx="2"/><text x="${x0+55}" y="${y(v)-8}" text-anchor="middle" style="fill:#1E2B31;font-size:17px">${v.toFixed(1)} %</text><text x="${x0+55}" y="${H-10}" text-anchor="middle" style="font-size:14px">${n}</text>`;});
+  $("boChart").innerHTML=h;})();
+
+/* willingness to pay */
+function drawWtp(){const c=+$("wtpC").value;$("wtpCV").textContent=c.toFixed(2);const w=DATA.base.map(v=>v-DATA.base[0]);const net=w.map((v,n)=>v-c*n);
+  let best=0;net.forEach((v,n)=>{if(v>net[best]+1e-12)best=n;});
+  const a=axes(720,360,52,10,16,54,-0.4,1.2,0.2,T.map(n=>String(n)));let h=a.h;
+  w.forEach((v,n)=>{const y0=a.y(0),y1=a.y(v);h+=`<rect x="${a.x(n)-a.bw*.3}" y="${Math.min(y0,y1)}" width="${a.bw*.6}" height="${Math.max(1,Math.abs(y1-y0))}" fill="${v>=0?"#2C6B83":"#B3261E"}" ${n===best?'stroke="#C9971C" stroke-width="3"':""}/><text x="${a.x(n)}" y="${v>=0?y1-6:y1+16}" text-anchor="middle" style="fill:#1E2B31;font-size:13px">${v>=0?"+":""}${v.toFixed(2)}</text>`;});
+  h+=`<polyline points="${T.map(n=>a.x(n)+","+a.y(c*n)).join(" ")}" fill="none" stroke="#C9971C" stroke-width="3" stroke-dasharray="7 4"/><text x="${a.x(1)}" y="${a.y(c*1)-14}" text-anchor="start" style="fill:#8a6611;font-size:14px">cost of n coins</text>`;
+  h+=`<text x="${(52+710)/2}" y="352" text-anchor="middle">number of coins bought</text>`;
+  $("wtpChart").innerHTML=h;$("wtpBest").textContent=best===0?"buy nothing (net 0.00)":`buy ${best} coins (net +${net[best].toFixed(2)})`;}
+$("wtpC").oninput=drawWtp;
+
+function onShow(k){if(k==="wtp")drawWtp();if(k==="worlds")drawWorlds();if(k==="rieder")drawRieder();if(k==="t2a")drawT();if(k==="th2")drawPil();if(k==="cascade")drawCascade();if(k==="mshin")drawMs();if(k==="demo"&&!$("lvTbl").innerHTML)drawLv();}
+drawWorlds();drawRieder();drawLv();drawCascade();drawMs();document.querySelector('#lvRounds button').classList.add("on");
+
+const start=parseInt((location.hash.match(/^#s(\d+)$/)||[])[1]||"1",10)-1;go(isNaN(start)?0:start);
+</script>
+
+<script>
+/* Presenter side of the live layer. Without a backend (no config, offline) this does nothing and the
+   presentation works exactly as before. */
+window.LIVE={on:false,hook(){}};
+(async function(){
+  const loadJs=src=>new Promise((res,rej)=>{const e=document.createElement("script");e.src=src;e.onload=res;e.onerror=rej;document.head.appendChild(e);});
+  const C=window.LIVE_CONFIG||{};
+  if(C.firebase&&!/[?&]mock=1/.test(location.search)){try{await loadJs("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");await loadJs("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");}catch(e){console.warn("Firebase SDK not loaded",e);}}
+window.LIVE=(function(){
+  const cfg=window.LIVE_CONFIG||{};
+  const qs=new URLSearchParams(location.search);
+  let room=qs.get("room");
+  if(!room){try{room=localStorage.getItem("liveroom");}catch(e){}}
+  if(!room){room=newCode();try{localStorage.setItem("liveroom",room);}catch(e){}}
+  function newCode(){const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";return Array.from({length:5},()=>a[Math.floor(Math.random()*a.length)]).join("");}
+  const net=makeNet(room);
+  const L={on:false,hook(){}};
+  if(!net)return L;
+  const joinUrl=()=>{let u=cfg.joinUrl;if(!u)u=location.href.split(/[?#]/)[0].replace(/[^/]*$/,"")+"join.html";return u+"?r="+room+(net.mock?"&mock=1":"");};
+  let players={},ans={},seatMap={},cur=null,sendT=null,started=false;
+  const sorted=()=>Object.entries(players).sort((a,b)=>(a[1].t||0)-(b[1].t||0)).map(e=>e[0]);
+  function seatsFor(key,max){if(!seatMap[key]){const ids=sorted();for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]];}
+      const m={};ids.slice(0,max).forEach((id,i)=>m[id]=i);seatMap[key]=m;}return seatMap[key];}
+  const nSeats=key=>Object.keys(seatMap[key]||{}).length;
+
+  /* ---------- UI ---------- */
+  function qrSvg(text,px){const q=qrcode(0,"M");q.addData(text);q.make();const n=q.getModuleCount(),c=px/(n+8);
+    let r="";for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(q.isDark(y,x))r+=`M${(x+4)*c},${(y+4)*c}h${c}v${c}h${-c}z`;
+    return `<svg viewBox="0 0 ${px} ${px}" width="${px}" height="${px}" role="img" aria-label="QR code to join"><rect width="${px}" height="${px}" fill="#fff"/><path d="${r}" fill="#1E2B31"/></svg>`;}
+  const short=()=>joinUrl().replace(/^https?:\/\//,"").replace(/&mock=1$/,"");
+  function paintJoin(){const n=Object.keys(players).length;
+    $("livePill").hidden=false;$("livePill").textContent="📱 "+n+" joined";
+    document.querySelectorAll(".liveQR").forEach(el=>{const px=+el.dataset.px||220;if(el.dataset.url!==joinUrl()){el.innerHTML=qrSvg(joinUrl(),px);el.dataset.url=joinUrl();}});
+    document.querySelectorAll(".liveUrl").forEach(el=>el.textContent=short());
+    document.querySelectorAll(".liveN").forEach(el=>el.textContent=n);
+    $("liveRoom").textContent=room;}
+  function pollBars(svgId,keys){const el=$(svgId);if(!el)return;const W=+el.getAttribute("width"),H=+el.getAttribute("height");let h="",any=false;
+    keys.forEach(([k,lab],g)=>{const a=Object.values(ans[k]||{}),y=a.filter(v=>v==="yes").length,no=a.filter(v=>v==="no").length,t=y+no;if(t)any=true;
+      const top=26+g*58,bw=W-140,wy=t?bw*y/t:0;
+      h+=`<text x="0" y="${top+20}" style="font-size:15px">${lab}</text>`;
+      if(t)h+=`<rect x="120" y="${top+4}" width="${wy}" height="24" fill="#2C6B83"/><rect x="${120+wy}" y="${top+4}" width="${bw-wy}" height="24" fill="#D9D6CE"/><text x="${120+wy+6}" y="${top+21}" style="fill:#1E2B31;font-size:14px">${y} yes · ${no} no</text>`;
+      else h+=`<text x="120" y="${top+20}" style="font-size:14px">no votes yet</text>`;});
+    el.innerHTML=h;}
+  function paintPolls(){pollBars("qPoll",[["poll_start","Start"]]);pollBars("cPoll",[["poll_start","Start"],["poll_end","Now"]]);}
+
+  /* ---------- apply answers to the slides' own state ---------- */
+  function applyMarket(){const key="mkt_"+lvKey();const m=seatMap[key]||{},a=ans[key]||{};let ch=false;
+    lv.phone=Array(10).fill(false);Object.entries(m).forEach(([id,i])=>{lv.phone[i]=true;const v=a[id];const s=v==null?"":String(v);if(lv.prices[i]!==s){lv.prices[i]=s;ch=true;}});
+    return ch;}
+  function applyUrn(){const key="urn_"+cs.r;const m=seatMap[key]||{},a=ans[key]||{};let ch=false;
+    Object.entries(m).forEach(([id,i])=>{const v=a[id];if((v==="A"||v==="B")&&cs.g[i]!==v){cs.g[i]=v;ch=true;}});return ch;}
+  const lvKey=()=>(document.querySelector("#lvRounds button.on")||{}).textContent||"R1";
+
+  /* ---------- state sent to phones ---------- */
+  function state(){const k=slides[cur].dataset.n;
+    if(k==="question")return {act:"poll",key:"poll_start"};
+    if(k==="close")return {act:"poll",key:"poll_end"};
+    if(k==="demo"){const key="mkt_"+lvKey(),seats=seatsFor(key,10);const o={act:"market",key,seats,coins:lv.coins.join(""),phase:lv.revealed?"revealed":lv.cleared?"cleared":"open"};
+      if(lv.cleared){const r=clear(lvOrders(),G05),V=lv.coins.reduce((a,b)=>a+b,0);o.res={P:r.P,side:r.side,V:lv.revealed?V:null,g:lv.revealed?pay(V,r.P,r.side):null};}
+      return o;}
+    if(k==="cascade"){const key="urn_"+cs.r,seats=seatsFor(key,10);return {act:"urn",key,seats,n:cs.n,balls:CR[cs.r].s.slice(0,10),g:cs.g.slice(0,cs.n).map(v=>v||""),rev:cs.rev,urn:cs.rev?CR[cs.r].urn:null};}
+    return {act:"wait"};}
+  function send(){clearTimeout(sendT);sendT=setTimeout(()=>{const s=state();s.ts=Date.now();net.set("state",s);},60);}
+
+  L.on=true;
+  L.hook=function(ev,arg){if(!started)return;
+    if(ev==="show"){cur=slides.findIndex(s=>s.classList.contains("on"));const k=slides[cur].dataset.n;
+      if(k==="cascade"){seatsFor("urn_"+cs.r,10);const m=nSeats("urn_"+cs.r);if(m>=4&&cs.n!==m){cs.n=m;$("cN").value=String(m);}}
+      if(k==="demo"){seatsFor("mkt_"+lvKey(),10);applyMarket();drawLv();}
+      if(k==="cascade"){applyUrn();drawCascade();}
+      paintPolls();}
+    if(ev==="lvRound"){net.set("ans/mkt_"+lvKey(),null);delete ans["mkt_"+lvKey()];delete seatMap["mkt_"+lvKey()];seatsFor("mkt_"+lvKey(),10);applyMarket();drawLv();}
+    if(ev==="urnReset"){net.set("ans/urn_"+cs.r,null);delete ans["urn_"+cs.r];}
+    if(ev==="urnRound"){net.set("ans/urn_"+cs.r,null);delete ans["urn_"+cs.r];delete seatMap["urn_"+cs.r];seatsFor("urn_"+cs.r,10);const m=nSeats("urn_"+cs.r);if(m>=4){cs.n=m;$("cN").value=String(m);}applyUrn();drawCascade();}
+    send();};
+  /* reseat everybody who has joined (late joiners) */
+  L.reseat=function(){const k=slides[cur].dataset.n;if(k==="demo"){delete seatMap["mkt_"+lvKey()];seatsFor("mkt_"+lvKey(),10);applyMarket();drawLv();send();}else if(k==="cascade"){delete seatMap["urn_"+cs.r];L.hook("show");}else send();};
+  L.newSession=function(){room=newCode();try{localStorage.setItem("liveroom",room);}catch(e){}location.search="?room="+room+(net.mock?"&mock=1":"");};
+
+  net.ready.then(ok=>{if(!ok){$("livePill").hidden=false;$("livePill").textContent="📱 offline";return;}
+    started=true;document.body.classList.add("live");cur=slides.findIndex(s=>s.classList.contains("on"));
+    net.on("players",v=>{players=v||{};paintJoin();if($("liveBox").hidden===false)paintJoin();});
+    net.on("ans",v=>{ans=v||{};paintPolls();const k=slides[cur].dataset.n;
+      if(k==="demo"){const b=lv.phone.join();applyMarket();drawLv(b!==lv.phone.join());}
+      if(k==="cascade"&&applyUrn()){drawCascade();send();}});
+    paintJoin();L.hook("show");});
+  $("livePill").onclick=()=>{$("liveBox").hidden=!$("liveBox").hidden;paintJoin();};
+  document.addEventListener("keydown",e=>{const t=e.target.tagName;if(t==="INPUT"||t==="SELECT")return;if(e.key==="j"||e.key==="J"){$("liveBox").hidden=!$("liveBox").hidden;paintJoin();}});
+  $("liveClose").onclick=()=>{$("liveBox").hidden=true;};
+  $("liveReseat").onclick=()=>L.reseat();
+  $("liveNew").onclick=()=>{if(confirmNew())L.newSession();};
+  function confirmNew(){const b=$("liveNew");if(b.dataset.arm){return true;}b.dataset.arm=1;b.textContent="Click again to confirm";setTimeout(()=>{delete b.dataset.arm;b.textContent="New session";},2500);return false;}
+  return L;})();
+})();
+
+</script>
+
+</body></html>
